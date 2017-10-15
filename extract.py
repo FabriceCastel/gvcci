@@ -44,28 +44,25 @@ print("initializing kmeans model... this is going to take a while, go grab a cof
 
 
 # convert the hue component into two values, sin(pi * h) and cos(pi * h)
-cos_h = np.cos(2 * np.pi * hsv_colors[:,0])
-sin_h = np.sin(2 * np.pi * hsv_colors[:,0])
+def hsv_to_hhsv(colors):
+    cos_h = np.cos(2 * np.pi * colors[:,0])
+    sin_h = np.sin(2 * np.pi * colors[:,0])
+    hh_colors = np.vstack((cos_h, sin_h)).T
+    return np.vstack((hh_colors[:,0], hh_colors[:,1], hsv_colors[:,1], hsv_colors[:,2])).T
 
-hh_colors = np.vstack((cos_h, sin_h)).T
-hhsv_colors = np.vstack((hh_colors[:,0], hh_colors[:,1], hsv_colors[:,1], hsv_colors[:,2])).T
-print(hhsv_colors.shape)
+def hhsv_cluster_centers(colors):
+    kmeans_model_hhsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
+    kmeans_hhsv = kmeans_model_hhsv.fit(hsv_to_hhsv(colors))
+    return kmeans_hhsv.cluster_centers_
 
-kmeans_model_hhsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
-kmeans_hhsv = kmeans_model_hhsv.fit(hhsv_colors)
+hhsv_centers = hhsv_cluster_centers(hsv_colors)
 
-hhsv_centers = kmeans_hhsv.cluster_centers_
-circular_hue_centers = hhsv_centers[:,0:2]
-circular_hue_center_radii = np.multiply(circular_hue_centers[:,0], circular_hue_centers[:,0]) + np.multiply(circular_hue_centers[:,1], circular_hue_centers[:,1])
-circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
-norm_circular_hue_centers = circular_hue_centers / circular_hue_center_radii
-norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
-
-# Arc Cos returns the x in [0, pi] such that cos(x) = y
-#h_centers_arccos = np.arccos(norm_circular_hue_centers[:,0])
-#h_centers_arcsin = np.arcsin(norm_circular_hue_centers[:,1])
-
-#h_centers = np.vstack((h_centers_arccos, h_centers_arcsin)).T / (2 * np.pi)
+def hh_cluster_centers_to_h_cluster_centers(hh_centers):
+    circular_hue_center_radii = np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1])
+    circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
+    norm_circular_hue_centers = hh_centers / circular_hue_center_radii
+    norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
+    return hcos_hsin_to_h(norm_circular_hue_centers)
 
 def hcos_hsin_to_h(hh_array):
     h_array = []
@@ -80,10 +77,16 @@ def hcos_hsin_to_h(hh_array):
         h_array.append(original)
     return np.array(h_array).reshape(-1, 1)
 
-h_centers = hcos_hsin_to_h(norm_circular_hue_centers)
-s_centers = hhsv_centers[:,2].reshape(-1, 1)
-v_centers = hhsv_centers[:,3].reshape(-1, 1)
-improved_centers = np.hstack((h_centers, s_centers, v_centers))
+def hhsv_to_hsv(colors):
+    h = hh_cluster_centers_to_h_cluster_centers(colors[:,0:2])
+    s = colors[:,2].reshape(-1, 1)
+    v = colors[:,3].reshape(-1, 1)
+    return np.hstack((h, s, v))
+
+# h_centers = hh_cluster_centers_to_h_cluster_centers(hhsv_centers[:,0:2])
+# s_centers = hhsv_centers[:,2].reshape(-1, 1)
+# v_centers = hhsv_centers[:,3].reshape(-1, 1)
+improved_centers = hhsv_to_hsv(hhsv_centers)
 
 
 
@@ -95,9 +98,6 @@ improved_centers = np.hstack((h_centers, s_centers, v_centers))
 kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
 kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
 centers = kmeans_hsv.cluster_centers_
-# convert the two values for hue back into a single hue value
-print(centers)
-
 
 def get_col_for_property(property):
     if (property == 'h'):
@@ -114,15 +114,6 @@ def sort_by_property(colors, property):
 def trim_colors(colors, property, keep):
     sorted = sort_by_property(colors, property)
     return sorted[keep:]
-    
-# centers_v_filtered = trim_colors(centers, 'v', n_colors)
-
-# Sort all 32 centers found in 3D HSV kmeans
-centers_sort_criteria = -1 * (centers[:,1] + np.power(centers[:,2], 2))
-sorted_centers = centers[np.argsort(centers_sort_criteria)]
-
-# centers_v_filtered = trim_colors(centers, 'v', n_colors)
-# sorted_h_centers = centers_v_filtered[np.argsort(centers_v_filtered[:,0])]
 
 def custom_sort(colors):
     sort_criteria = -1 * (colors[:,1] + np.power(colors[:,2], 2))
