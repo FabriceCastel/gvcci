@@ -53,19 +53,39 @@ kmeans_model_hh = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_b
 kmeans_hh = kmeans_model_hh.fit(hh_colors)
 
 circular_hue_centers = kmeans_hh.cluster_centers_
-circular_hue_center_radii = np.power(circular_hue_centers[:,0], 2) + np.power(circular_hue_centers[:,1], 2)
+circular_hue_center_radii = np.multiply(circular_hue_centers[:,0], circular_hue_centers[:,0]) + np.multiply(circular_hue_centers[:,1], circular_hue_centers[:,1])
 circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
 norm_circular_hue_centers = circular_hue_centers / circular_hue_center_radii
+norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
 
 # Arc Cos returns the x in [0, pi] such that cos(x) = y
-h_centers_arccos = np.arccos(norm_circular_hue_centers[:,0])
+#h_centers_arccos = np.arccos(norm_circular_hue_centers[:,0])
+#h_centers_arcsin = np.arcsin(norm_circular_hue_centers[:,1])
 
-h_centers_arcsin = np.arcsin(norm_circular_hue_centers[:,1])
+#h_centers = np.vstack((h_centers_arccos, h_centers_arcsin)).T / (2 * np.pi)
 
-h_centers = np.vstack((h_centers_arccos, h_centers_arcsin)).T
+def hcos_hsin_to_h(hh_array):
+    h_array = []
+    for i in range(hh_array.shape[0]):
+        cosinus = hh_array[i][0]
+        sinus = hh_array[i][1]
+        original = np.arccos(cosinus)
+        if (sinus < 0):
+            original = (2 * np.pi) - original
+
+        original = original / (2 * np.pi)
+        h_array.append(original)
+    return np.array(h_array).reshape(-1, 1)
+
+h_centers = hcos_hsin_to_h(norm_circular_hue_centers)
+print(h_centers.shape)
+print(circular_hue_centers.shape)
+hsv_centers = np.hstack((h_centers, circular_hue_centers[:,2], circular_hue_centers[:,3]))
 print(norm_circular_hue_centers)
-print('........')
+print('h_centers')
 print(h_centers)
+print('hsv_centers')
+print(hsv_centers)
 
 kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
 kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
