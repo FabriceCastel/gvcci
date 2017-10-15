@@ -8,16 +8,11 @@ from skimage import color
 
 from sklearn.cluster import MiniBatchKMeans
 
-# Force prints of the full numpy arrays
-# np.set_printoptions(threshold=np.inf)
-
 # Constants
 kmeans_batch_size = 100
 n_clusters = 32
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
-sort_s_weight = 1
-sort_v_weight = 2
 
 # Utils
 def rgb2hex(r,g,b):
@@ -55,8 +50,6 @@ def hhsv_cluster_centers(colors):
     kmeans_hhsv = kmeans_model_hhsv.fit(hsv_to_hhsv(colors))
     return kmeans_hhsv.cluster_centers_
 
-hhsv_centers = hhsv_cluster_centers(hsv_colors)
-
 def hh_cluster_centers_to_h_cluster_centers(hh_centers):
     circular_hue_center_radii = np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1])
     circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
@@ -83,21 +76,15 @@ def hhsv_to_hsv(colors):
     v = colors[:,3].reshape(-1, 1)
     return np.hstack((h, s, v))
 
-# h_centers = hh_cluster_centers_to_h_cluster_centers(hhsv_centers[:,0:2])
-# s_centers = hhsv_centers[:,2].reshape(-1, 1)
-# v_centers = hhsv_centers[:,3].reshape(-1, 1)
+hhsv_centers = hhsv_cluster_centers(hsv_colors)
 improved_centers = hhsv_to_hsv(hhsv_centers)
 
+def hsv_cluster_centers(colors):
+    kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
+    kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
+    return kmeans_hsv.cluster_centers_
 
-
-# centers = hsv_centers
-# </end new stuff>
-
-
-
-kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
-kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
-centers = kmeans_hsv.cluster_centers_
+centers = hsv_cluster_centers(hsv_colors)
 
 def get_col_for_property(property):
     if (property == 'h'):
@@ -116,17 +103,50 @@ def trim_colors(colors, property, keep):
     return sorted[keep:]
 
 def custom_sort(colors):
-    sort_criteria = -1 * (colors[:,1] + np.power(colors[:,2], 2))
+    pow_s = 1
+    pow_v = 1
+    s = colors[:,1]
+    v = colors[:,2]
+    sort_criteria = -1 * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
     return colors[np.argsort(sort_criteria)]
 
 def sort_by_h(colors):
     return sort_by_property(colors, 'h')
 
+def filter_by_v(colors):
+    return trim_colors(colors, 'v', n_colors)
+
 def filter_v_and_sort_by_h(colors):
-    v_filtered = trim_colors(colors, 'v', n_colors)
+    v_filtered = filter_by_v(colors)
     h_sorted = sort_by_h(v_filtered)
     return h_sorted
 
+def custom_filter_and_sort(colors):
+    return custom_sort(filter_by_v(colors))
+
+def generate_complementary(colors, delta_v = 0.15, delta_s = 0.1):
+    base = np.copy(colors[:colors.shape[0] // 2])
+    num_colors = base.shape[0]
+    avg_s = np.sum(colors[:,1]) / num_colors
+    avg_v = np.sum(colors[:,2]) / num_colors
+    complements = np.zeros(base.shape)
+    for i in range(num_colors):
+        complements[i] = base[i]
+        if (colors[i][2] < avg_v):
+            complements[i][2] += delta_v
+        else:
+            base[i][2] -= delta_v
+
+        if (colors[i][1] < avg_s):
+            complements[i][1] += delta_s
+        else:
+            base[i][1] -= delta_s
+
+    complements = np.clip(complements, 0, 1)
+    combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
+    combined[0::2] = base
+    combined[1::2] = complements
+    return combined
 
 print("formatting cluster center results...")
 
@@ -141,7 +161,7 @@ def hex_codes_to_html_list(hex_codes, hsv_colors):
     html = "<ul style='padding: 0; list-style-type: none; margin-right: 20px'>\n"
     for i in range(len(hex_codes)):
         html += "<li style='height: 20px; background: " + hex_codes[i] + "'>"
-        html += "HSV: (" + str((255 * hsv_colors[i]).astype(int)) + ")"
+        html += str((255 * hsv_colors[i]).astype(int))
         html += "</li>\n"
     return html + "</ul>\n"
 
@@ -160,11 +180,12 @@ def html_color_list(title, colors, col_width = 300):
 
 print("generating html preview...")
 html =  "<body style='background: #000'><img src='" + img_file_path + "' style='max-width: 100%'/>\n"
-html += "<div style='display: flex'>"
+html += "<div style='display: flex; overflow: scroll;'>"
 html += html_color_list("3D HSV", sort_by_h(centers))
-html += html_color_list("Filtered 3D HSV", filter_v_and_sort_by_h(centers))
+html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
 html += html_color_list("4D HSV", sort_by_h(improved_centers))
-html += html_color_list("Filtered 4D HSV", filter_v_and_sort_by_h(improved_centers))
+html += html_color_list("Filtered 4D HSV", custom_filter_and_sort(improved_centers))
+html += html_color_list("Filtered 4D HSV Comp", generate_complementary(custom_filter_and_sort(improved_centers)))
 html += "</div>"
 html += "</body>\n"
 
