@@ -124,7 +124,7 @@ def filter_v_and_sort_by_h(colors):
 def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
-def generate_complementary(colors, delta_v = 0.15, delta_s = 0.1):
+def generate_complementary(colors, delta_v = 0.15, delta_s = 0.07):
     base = np.copy(colors[:colors.shape[0] // 2])
     num_colors = base.shape[0]
     avg_s = np.sum(colors[:,1]) / num_colors
@@ -134,13 +134,10 @@ def generate_complementary(colors, delta_v = 0.15, delta_s = 0.1):
         complements[i] = base[i]
         if (colors[i][2] < avg_v):
             complements[i][2] += delta_v
+            complements[i][1] -= delta_s
         else:
             base[i][2] -= delta_v
-
-        if (colors[i][1] < avg_s):
-            complements[i][1] += delta_s
-        else:
-            base[i][1] -= delta_s
+            base[i][1] += delta_s
 
     complements = np.clip(complements, 0, 1)
     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
