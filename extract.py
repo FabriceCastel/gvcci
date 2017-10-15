@@ -48,11 +48,14 @@ cos_h = np.cos(2 * np.pi * hsv_colors[:,0])
 sin_h = np.sin(2 * np.pi * hsv_colors[:,0])
 
 hh_colors = np.vstack((cos_h, sin_h)).T
+hhsv_colors = np.vstack((hh_colors[:,0], hh_colors[:,1], hsv_colors[:,1], hsv_colors[:,2])).T
+print(hhsv_colors.shape)
 
-kmeans_model_hh = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
-kmeans_hh = kmeans_model_hh.fit(hh_colors)
+kmeans_model_hhsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
+kmeans_hhsv = kmeans_model_hhsv.fit(hhsv_colors)
 
-circular_hue_centers = kmeans_hh.cluster_centers_
+hhsv_centers = kmeans_hhsv.cluster_centers_
+circular_hue_centers = hhsv_centers[:,0:2]
 circular_hue_center_radii = np.multiply(circular_hue_centers[:,0], circular_hue_centers[:,0]) + np.multiply(circular_hue_centers[:,1], circular_hue_centers[:,1])
 circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
 norm_circular_hue_centers = circular_hue_centers / circular_hue_center_radii
@@ -78,14 +81,16 @@ def hcos_hsin_to_h(hh_array):
     return np.array(h_array).reshape(-1, 1)
 
 h_centers = hcos_hsin_to_h(norm_circular_hue_centers)
-print(h_centers.shape)
-print(circular_hue_centers.shape)
-hsv_centers = np.hstack((h_centers, circular_hue_centers[:,2], circular_hue_centers[:,3]))
-print(norm_circular_hue_centers)
-print('h_centers')
-print(h_centers)
-print('hsv_centers')
-print(hsv_centers)
+s_centers = hhsv_centers[:,2].reshape(-1, 1)
+v_centers = hhsv_centers[:,3].reshape(-1, 1)
+improved_centers = np.hstack((h_centers, s_centers, v_centers))
+
+
+
+# centers = hsv_centers
+# </end new stuff>
+
+
 
 kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
 kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
@@ -110,16 +115,27 @@ def trim_colors(colors, property, keep):
     sorted = sort_by_property(colors, property)
     return sorted[keep:]
     
-centers_v_filtered = trim_colors(centers, 'v', n_colors)
+# centers_v_filtered = trim_colors(centers, 'v', n_colors)
 
+# Sort all 32 centers found in 3D HSV kmeans
 centers_sort_criteria = -1 * (centers[:,1] + np.power(centers[:,2], 2))
-
-# centers_s_times_v_neg = -1 * np.multiply(np.power(centers_v_filtered[:,1], sort_s_weight), np.power(centers_v_filtered[:,2], sort_v_weight))
-# centers_s_plus_v_neg = -1 * ((sort_s_weight * centers_v_filtered[:,1]) + (sort_v_weight * centers_v_filtered[:,2]))
 sorted_centers = centers[np.argsort(centers_sort_criteria)]
 
-centers_v_filtered = trim_colors(centers, 'v', n_colors)
-sorted_h_centers = centers_v_filtered[np.argsort(centers_v_filtered[:,0])]
+# centers_v_filtered = trim_colors(centers, 'v', n_colors)
+# sorted_h_centers = centers_v_filtered[np.argsort(centers_v_filtered[:,0])]
+
+def custom_sort(colors):
+    sort_criteria = -1 * (colors[:,1] + np.power(colors[:,2], 2))
+    return colors[np.argsort(sort_criteria)]
+
+def sort_by_h(colors):
+    return sort_by_property(colors, 'h')
+
+def filter_v_and_sort_by_h(colors):
+    v_filtered = trim_colors(colors, 'v', n_colors)
+    h_sorted = sort_by_h(v_filtered)
+    return h_sorted
+
 
 print("formatting cluster center results...")
 
@@ -131,7 +147,7 @@ def get_hex_codes(rgb_list):
     return hex_codes
 
 def hex_codes_to_html_list(hex_codes, hsv_colors):
-    html = "<ul>\n"
+    html = "<ul style='padding: 0; list-style-type: none; margin-right: 20px'>\n"
     for i in range(len(hex_codes)):
         html += "<li style='height: 20px; background: " + hex_codes[i] + "'>"
         html += "HSV: (" + str((255 * hsv_colors[i]).astype(int)) + ")"
@@ -144,13 +160,21 @@ def hsv_color_list_to_html_list(color_list):
     hex_codes = get_hex_codes(rgb_colors)
     return hex_codes_to_html_list(hex_codes, color_list.reshape(-1, 3))
 
+def html_color_list(title, colors, col_width = 300):
+    html = "<div style='flex-basis: " + str(col_width) + "px;'>"
+    html += "<h2 style='color: white;'>" + str(title) + "</h4>"
+    html += hsv_color_list_to_html_list(colors)
+    html += "</div>"
+    return html
+
 print("generating html preview...")
-html = "<body style='background: #000'><img src='" + img_file_path + "' style='max-width: 100%'/>\n"
-html += "<div style='display: inline'><div style='width: 40%; position: absolute; left: 0'>"
-html += hsv_color_list_to_html_list(sorted_centers)
-html += "</div><div style='width: 40%; position: absolute; right: 0'>"
-html += hsv_color_list_to_html_list(sorted_h_centers)
-html += "</div></div>"
+html =  "<body style='background: #000'><img src='" + img_file_path + "' style='max-width: 100%'/>\n"
+html += "<div style='display: flex'>"
+html += html_color_list("3D HSV", sort_by_h(centers))
+html += html_color_list("Filtered 3D HSV", filter_v_and_sort_by_h(centers))
+html += html_color_list("4D HSV", sort_by_h(improved_centers))
+html += html_color_list("Filtered 4D HSV", filter_v_and_sort_by_h(improved_centers))
+html += "</div>"
 html += "</body>\n"
 
 result_file = open("result.html", "w")
