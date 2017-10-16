@@ -104,6 +104,8 @@ def custom_sort(colors):
     return colors[np.argsort(sort_criteria)]
 
 def filter_by_custom(colors):
+    # TODO - Find a way to filter by saturation + value but also
+    #        prefer colors with larger delta between each others hues
     return custom_sort(colors)[:n_colors]
 
 def sort_by_h(colors):
@@ -151,8 +153,11 @@ def get_hex_codes(rgb_list):
 def hex_codes_to_html_list(hex_codes, hsv_colors):
     html = "<ul style='padding: 0; list-style-type: none; margin-right: 20px'>\n"
     for i in range(len(hex_codes)):
-        html += "<li style='height: 20px; background: " + hex_codes[i] + "'>"
-        html += str((255 * hsv_colors[i]).astype(int))
+        # html += "<li style='height: 20px; background: " + hex_codes[i] + "'>"
+        # html += str((255 * hsv_colors[i]).astype(int))
+        # html += "</li>\n"
+        html += "<li style='height: 24px; overflow: hidden; color: " + hex_codes[i] + "'>"
+        html += "<p style='font-family: monospace; margin-top: -5px; font-size: 18px;'>int main();</p>"
         html += "</li>\n"
     return html + "</ul>\n"
 
