@@ -20,23 +20,21 @@ def rgb2hex(r,g,b):
     return hex
 
 
-print("reading image...")
-img_file_path = sys.argv[1]
-img_rgb = io.imread(img_file_path)
+def get_pixels_for_image(img_file_path):
+    print("reading image...")
+    img_rgb = io.imread(img_file_path)
 
-print("converting color space...")
-img_hsv = color.convert_colorspace(img_rgb, 'RGB', 'HSV')
-hsv_colors = img_hsv.reshape((-1, 3))
+    print("converting color space...")
+    img_hsv = color.convert_colorspace(img_rgb, 'RGB', 'HSV')
+    hsv_colors = img_hsv.reshape((-1, 3))
 
-print("filtering out darkest colors before clustering for better results...")
-samples_before = hsv_colors.shape[0]
-hsv_colors = hsv_colors[hsv_colors[:,2] > v_threshold]
-samples_after = hsv_colors.shape[0]
+    print("filtering out darkest colors before clustering for better results...")
+    samples_before = hsv_colors.shape[0]
+    hsv_colors = hsv_colors[hsv_colors[:,2] > v_threshold]
+    samples_after = hsv_colors.shape[0]
 
-print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
-
-print("initializing kmeans model... this is going to take a while, go grab a coffee or some tea")
-
+    print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
+    return hsv_colors
 
 # convert the hue component into two values, sin(pi * h) and cos(pi * h)
 def hsv_to_hhsv(colors):
@@ -76,15 +74,10 @@ def hhsv_to_hsv(colors):
     v = colors[:,3].reshape(-1, 1)
     return np.hstack((h, s, v))
 
-hhsv_centers = hhsv_cluster_centers(hsv_colors)
-improved_centers = hhsv_to_hsv(hhsv_centers)
-
 def hsv_cluster_centers(colors):
     kmeans_model_hsv = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
     kmeans_hsv = kmeans_model_hsv.fit(hsv_colors)
     return kmeans_hsv.cluster_centers_
-
-centers = hsv_cluster_centers(hsv_colors)
 
 def get_col_for_property(property):
     if (property == 'h'):
@@ -110,6 +103,9 @@ def custom_sort(colors):
     sort_criteria = -1 * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
     return colors[np.argsort(sort_criteria)]
 
+def filter_by_custom(colors):
+    return custom_sort(colors)[:n_colors]
+
 def sort_by_h(colors):
     return sort_by_property(colors, 'h')
 
@@ -124,7 +120,7 @@ def filter_v_and_sort_by_h(colors):
 def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
-def generate_complementary(colors, delta_v = 0.15, delta_s = 0.07):
+def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
     base = np.copy(colors[:colors.shape[0] // 2])
     num_colors = base.shape[0]
     avg_s = np.sum(colors[:,1]) / num_colors
@@ -144,8 +140,6 @@ def generate_complementary(colors, delta_v = 0.15, delta_s = 0.07):
     combined[0::2] = base
     combined[1::2] = complements
     return combined
-
-print("formatting cluster center results...")
 
 def get_hex_codes(rgb_list):
     hex_codes = []
@@ -175,17 +169,34 @@ def html_color_list(title, colors, col_width = 300):
     html += "</div>"
     return html
 
-print("generating html preview...")
-html =  "<body style='background: #000'><img src='" + img_file_path + "' style='max-width: 100%'/>\n"
-html += "<div style='display: flex; overflow: scroll;'>"
-html += html_color_list("3D HSV", sort_by_h(centers))
-html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
-html += html_color_list("4D HSV", sort_by_h(improved_centers))
-html += html_color_list("Filtered 4D HSV", custom_filter_and_sort(improved_centers))
-html += html_color_list("Filtered 4D HSV Comp", generate_complementary(custom_filter_and_sort(improved_centers)))
-html += "</div>"
-html += "</body>\n"
+def get_html_contents(center, improved_centers, img_file_path):
+    print("generating html preview...")
+    html = "<img src='" + img_file_path + "' style='max-width: 100%'/>"
+    html += "<div style='display: flex; overflow: scroll;'>"
+    html += html_color_list("3D HSV", sort_by_h(centers))
+    html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
+    html += html_color_list("4D HSV", sort_by_h(improved_centers))
+    html += html_color_list("Filtered 4D HSV", filter_by_custom(improved_centers))
+    html += html_color_list("Filtered 4D HSV Comp", generate_complementary(filter_by_custom(improved_centers)))
+    html += "</div>"
+    return html
 
-result_file = open("result.html", "w")
-result_file.write(html)
-result_file.close()
+html_contents = ""
+
+for i in range(1, len(sys.argv)):
+    print("Generating colors for input " + str(i) + " of " + str(len(sys.argv) - 1))
+    img_file_path = sys.argv[i]
+    hsv_colors = get_pixels_for_image(img_file_path)
+    hhsv_centers = hhsv_cluster_centers(hsv_colors)
+    improved_centers = hhsv_to_hsv(hhsv_centers)
+    centers = hsv_cluster_centers(hsv_colors)
+    html_contents += get_html_contents(centers, improved_centers, img_file_path)
+    html =  "<body style='background: #000'>\n"
+    html += "<div>"
+    html += html_contents
+    html += "</div>"
+    html += "</body>\n"
+
+    result_file = open("result.html", "w")
+    result_file.write(html)
+    result_file.close()
