@@ -108,6 +108,9 @@ def filter_by_custom(colors):
     #        prefer colors with larger delta between each others hues
     return custom_sort(colors)[:n_colors]
 
+def sort_by_v(colors):
+    return sort_by_property(colors, 'v')
+
 def sort_by_h(colors):
     return sort_by_property(colors, 'h')
 
@@ -123,7 +126,8 @@ def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
 def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
-    base = np.copy(colors[:colors.shape[0] // 2])
+    # base = np.copy(colors[:colors.shape[0] // 2])
+    base = np.copy(colors)
     num_colors = base.shape[0]
     avg_s = np.sum(colors[:,1]) / num_colors
     avg_v = np.sum(colors[:,2]) / num_colors
@@ -143,6 +147,55 @@ def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
     combined[1::2] = complements
     return combined
 
+def custom_filter_and_sort_complements(colors):
+    distance_threshold = 0.02 # all distances between S/V colors larger than that are OK by default
+    v_lower_bound = 0.5 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
+
+    # do something about the fact that saturated blues need higher V to be legible
+
+    sorted = sort_by_v(colors)
+    above_v_lower_bound = colors[colors[:,2] >= v_lower_bound]
+
+    # distance between two colors' hue/saturation/value
+    def dist(a, b):
+        return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2
+
+    print(n_colors)
+    print(above_v_lower_bound)
+
+    if above_v_lower_bound.shape[0] <= (n_colors // 2):
+        result = custom_sort(colors)[:n_colors // 2]
+        return generate_complementary(result)
+
+    while above_v_lower_bound.shape[0] > (n_colors // 2):
+        print('looking for closest pair...')
+        closest_pair = (above_v_lower_bound[0], above_v_lower_bound[1])
+        closest_dist = dist(closest_pair[0], closest_pair[1])
+        index_1 = 0
+        for i in range(len(above_v_lower_bound)):
+            a = above_v_lower_bound[i]
+            rest = above_v_lower_bound[:]
+            rest = np.delete(rest, i, 0)
+            closest = min(
+                map(lambda b: (dist(a, b), b), rest),
+                key=lambda p: p[0])
+            if closest[0] < closest_dist:
+                closest_pair = (a, closest[1])
+                closest_dist = closest[0]
+                index_1 = i
+
+        print('closest dist found: ' + str(closest_dist))
+        if closest_dist > distance_threshold:
+            print('closest dist is now large enough')
+            break
+
+        # TODO - be smarter about which of the two colors to remove
+        # index = above_v_lower_bound.index(closes_pair[0])
+        above_v_lower_bound = np.delete(above_v_lower_bound, index_1, 0)
+
+    result = custom_sort(above_v_lower_bound)[:n_colors // 2]
+    return generate_complementary(result)
+
 def get_hex_codes(rgb_list):
     hex_codes = []
     for i in range(rgb_list.shape[0]):
@@ -157,7 +210,7 @@ def hex_codes_to_html_list(hex_codes, hsv_colors):
         # html += str((255 * hsv_colors[i]).astype(int))
         # html += "</li>\n"
         html += "<li style='height: 24px; overflow: hidden; color: " + hex_codes[i] + "'>"
-        html += "<p style='font-family: monospace; margin-top: -5px; font-size: 18px;'>int main();</p>"
+        html += "<p style='font-family: monospace; whitespace: no-wrap; margin-top: -5px; font-size: 18px;'>def a = " + str((100 * hsv_colors[i]).astype(int)) + "</p>"
         html += "</li>\n"
     return html + "</ul>\n"
 
@@ -182,7 +235,7 @@ def get_html_contents(center, improved_centers, img_file_path):
     html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
     html += html_color_list("4D HSV", sort_by_h(improved_centers))
     html += html_color_list("Filtered 4D HSV", filter_by_custom(improved_centers))
-    html += html_color_list("Filtered 4D HSV Comp", generate_complementary(filter_by_custom(improved_centers)))
+    html += html_color_list("Filtered 4D HSV Comp", custom_filter_and_sort_complements(improved_centers))
     html += "</div>"
     return html
 
