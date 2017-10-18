@@ -147,6 +147,7 @@ def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
     return combined
 
 def custom_filter_and_sort_complements(colors):
+    print("Pruning similar colors...")
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
     v_lower_bound = 0.6 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
 
@@ -164,7 +165,6 @@ def custom_filter_and_sort_complements(colors):
         return generate_complementary(result)
 
     while above_v_lower_bound.shape[0] > (n_colors // 2):
-        print('looking for closest pair...')
         closest_pair = [above_v_lower_bound[0], above_v_lower_bound[1]]
         closest_dist = dist(closest_pair[0], closest_pair[1])
         index_1 = 0
@@ -192,9 +192,7 @@ def custom_filter_and_sort_complements(colors):
                 index_1 = i
                 index_2 = index_b
 
-        print('closest dist found: ' + str(closest_dist))
         if closest_dist > distance_threshold:
-            print('closest dist is now large enough')
             break
 
         # TODO - be smarter about which of the two colors to remove
@@ -220,9 +218,6 @@ def get_hex_codes(rgb_list):
 def hex_codes_to_html_list(hex_codes, hsv_colors):
     html = "<ul style='padding: 0; list-style-type: none; margin-right: 20px'>\n"
     for i in range(len(hex_codes)):
-        # html += "<li style='height: 20px; background: " + hex_codes[i] + "'>"
-        # html += str((255 * hsv_colors[i]).astype(int))
-        # html += "</li>\n"
         html += "<li style='height: 24px; overflow: hidden; color: " + hex_codes[i] + "'>"
         html += "<p style='font-family: monospace; whitespace: no-wrap; margin-top: -5px; font-size: 18px;'>def a = " + str((100 * np.clip(hsv_colors[i], 0, 1)).astype(int)) + "</p>"
         html += "</li>\n"
