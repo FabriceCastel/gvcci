@@ -285,6 +285,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     color_groups = [
         (black, ["::"]),
+        (yellow, ["tail: "]),
         (magenta, ["@annotation.tailrec", "match", "case", ".", ": "]), 
         (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "acc", "tail(", "tail)", " go", "stream", "reverse"]),
         (red, ["= ", "=>"]),
@@ -298,7 +299,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     width = 1200
     height = 700
     terminal_padding = 30
-    text_padding = 10
+    text_padding = 14
 
     html = "<img src='" + img_file_path + "' style='object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px; position: absolute; top: 0; left: 0;'/>"
     html += "<div style='z-index: 10; padding: " + str(text_padding) + "px; position: absolute; top: " + str(terminal_padding) + "px; left: " + str(terminal_padding) + "px;right: " + str(terminal_padding) + "px;bottom: " + str(terminal_padding) + "px; background-color: rgba(0, 0, 0, 0.85)'><pre style='margin: 0;'>"
@@ -306,8 +307,23 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     for group in color_groups:
         for word in group[1]:
             sample = sample.replace(word, wrap_in_span(word, hex[group[0]]))
+
+    lines = sample.split('\n')
+    vim = ''
+    for i in range(28):
+        prefix = str(i) + ' '
+        if (i < 10):
+            prefix = ' ' + prefix
+
+        prefix = wrap_in_span(prefix, hex[black])
+        
+        if (i < len(lines)):
+            vim += prefix + lines[i] + '\n'
+        else:
+            vim += wrap_in_span('~\n', hex[black])
+
     
-    html += sample
+    html += vim
     html += "</pre></div>"
 
     img_preview = "<img src='" + img_file_path + "' style='margin-bottom: 40px; object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px;'/>"
