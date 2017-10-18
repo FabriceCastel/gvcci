@@ -126,8 +126,6 @@ def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
 def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
-    # TODO - need to make sure to clip the values!
-    # base = np.copy(colors[:colors.shape[0] // 2])
     base = np.copy(colors)
     num_colors = base.shape[0]
     avg_s = np.sum(colors[:,1]) / num_colors
@@ -143,8 +141,6 @@ def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
             base[i][1] += delta_s
 
     complements = np.clip(complements, 0, 1)
-    print('clipped complements:')
-    print(complements)
     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
     combined[0::2] = base
     combined[1::2] = complements
@@ -162,9 +158,6 @@ def custom_filter_and_sort_complements(colors):
     # distance between two colors' hue/saturation/value
     def dist(a, b):
         return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2
-
-    print(n_colors)
-    print(above_v_lower_bound)
 
     if above_v_lower_bound.shape[0] <= (n_colors // 2):
         result = custom_sort(colors)[:n_colors // 2]
@@ -210,10 +203,8 @@ def custom_filter_and_sort_complements(colors):
         a = scored[0]
         b = above_v_lower_bound[index_1]
         if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
-            print('deleting index_1')
             above_v_lower_bound = np.delete(above_v_lower_bound, index_2, 0)
         else:
-            print('deleting index_2')
             above_v_lower_bound = np.delete(above_v_lower_bound, index_1, 0)
 
     result = custom_sort(above_v_lower_bound)[:n_colors // 2]
