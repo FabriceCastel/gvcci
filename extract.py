@@ -328,7 +328,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     html += vim
     html += "</pre></div>"
 
-    img_preview = "<img src='" + img_file_path + "' style='margin-bottom: 40px; object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px;'/>"
+    img_preview = "<img src='" + img_file_path + "' style='margin-bottom: 40px; object-fit: contain; height: " + str(height) + "px; width: " + str(width) + "px;'/>"
 
     return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
 
