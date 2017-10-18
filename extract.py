@@ -126,6 +126,7 @@ def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
 def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
+    # TODO - need to make sure to clip the values!
     # base = np.copy(colors[:colors.shape[0] // 2])
     base = np.copy(colors)
     num_colors = base.shape[0]
@@ -142,14 +143,16 @@ def generate_complementary(colors, delta_v = 0.12, delta_s = 0.07):
             base[i][1] += delta_s
 
     complements = np.clip(complements, 0, 1)
+    print('clipped complements:')
+    print(complements)
     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
     combined[0::2] = base
     combined[1::2] = complements
     return combined
 
 def custom_filter_and_sort_complements(colors):
-    distance_threshold = 0.02 # all distances between S/V colors larger than that are OK by default
-    v_lower_bound = 0.5 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
+    distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
+    v_lower_bound = 0.6 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
 
     # do something about the fact that saturated blues need higher V to be legible
 
@@ -169,20 +172,32 @@ def custom_filter_and_sort_complements(colors):
 
     while above_v_lower_bound.shape[0] > (n_colors // 2):
         print('looking for closest pair...')
-        closest_pair = (above_v_lower_bound[0], above_v_lower_bound[1])
+        closest_pair = [above_v_lower_bound[0], above_v_lower_bound[1]]
         closest_dist = dist(closest_pair[0], closest_pair[1])
         index_1 = 0
+        index_2 = 1 # this is so stupid...
         for i in range(len(above_v_lower_bound)):
             a = above_v_lower_bound[i]
             rest = above_v_lower_bound[:]
             rest = np.delete(rest, i, 0)
-            closest = min(
-                map(lambda b: (dist(a, b), b), rest),
-                key=lambda p: p[0])
-            if closest[0] < closest_dist:
-                closest_pair = (a, closest[1])
-                closest_dist = closest[0]
+            # closest = min(
+            #     map(lambda b: (dist(a, b), b), rest),
+            #     key=lambda p: p[0])
+
+            # soooo... silly >_> all this for an index...
+            # look at all these nested loops.. yeesh ;-;
+            min_dist_a = np.inf
+            index_b = 0
+            for j in range(len(above_v_lower_bound)):
+                cur_dist = dist(a, above_v_lower_bound[j])
+                if i != j and cur_dist < min_dist_a:
+                    min_dist_a = cur_dist
+                    index_b = j
+
+            if min_dist_a < closest_dist:
+                closest_dist = min_dist_a
                 index_1 = i
+                index_2 = index_b
 
         print('closest dist found: ' + str(closest_dist))
         if closest_dist > distance_threshold:
@@ -191,7 +206,15 @@ def custom_filter_and_sort_complements(colors):
 
         # TODO - be smarter about which of the two colors to remove
         # index = above_v_lower_bound.index(closes_pair[0])
-        above_v_lower_bound = np.delete(above_v_lower_bound, index_1, 0)
+        scored = custom_sort(np.array([above_v_lower_bound[index_1], above_v_lower_bound[index_2]]))
+        a = scored[0]
+        b = above_v_lower_bound[index_1]
+        if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
+            print('deleting index_1')
+            above_v_lower_bound = np.delete(above_v_lower_bound, index_2, 0)
+        else:
+            print('deleting index_2')
+            above_v_lower_bound = np.delete(above_v_lower_bound, index_1, 0)
 
     result = custom_sort(above_v_lower_bound)[:n_colors // 2]
     return generate_complementary(result)
@@ -210,13 +233,14 @@ def hex_codes_to_html_list(hex_codes, hsv_colors):
         # html += str((255 * hsv_colors[i]).astype(int))
         # html += "</li>\n"
         html += "<li style='height: 24px; overflow: hidden; color: " + hex_codes[i] + "'>"
-        html += "<p style='font-family: monospace; whitespace: no-wrap; margin-top: -5px; font-size: 18px;'>def a = " + str((100 * hsv_colors[i]).astype(int)) + "</p>"
+        html += "<p style='font-family: monospace; whitespace: no-wrap; margin-top: -5px; font-size: 18px;'>def a = " + str((100 * np.clip(hsv_colors[i], 0, 1)).astype(int)) + "</p>"
         html += "</li>\n"
     return html + "</ul>\n"
 
 def hsv_color_list_to_html_list(color_list):
     rgb_normalized = color.convert_colorspace(color_list.reshape(-1, 1, 3), 'HSV', 'RGB')
     rgb_colors = (255 * rgb_normalized.reshape(-1, 3)).astype(int)
+    rgb_colors = np.clip(rgb_colors, 0, 255)
     hex_codes = get_hex_codes(rgb_colors)
     return hex_codes_to_html_list(hex_codes, color_list.reshape(-1, 3))
 
