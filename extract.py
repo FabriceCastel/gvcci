@@ -223,6 +223,13 @@ def hex_codes_to_html_list(hex_codes, hsv_colors):
         html += "</li>\n"
     return html + "</ul>\n"
 
+def hsv_colors_to_hex_codes(color_list):
+    rgb_normalized = color.convert_colorspace(color_list.reshape(-1, 1, 3), 'HSV', 'RGB')
+    rgb_colors = (255 * rgb_normalized.reshape(-1, 3)).astype(int)
+    rgb_colors = np.clip(rgb_colors, 0, 255)
+    hex_codes = get_hex_codes(rgb_colors)
+    return hex_codes
+
 def hsv_color_list_to_html_list(color_list):
     rgb_normalized = color.convert_colorspace(color_list.reshape(-1, 1, 3), 'HSV', 'RGB')
     rgb_colors = (255 * rgb_normalized.reshape(-1, 3)).astype(int)
@@ -237,16 +244,86 @@ def html_color_list(title, colors, col_width = 300):
     html += "</div>"
     return html
 
+def wrap_in_span(text, color):
+    return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
+
+def get_preview_image(img_file_path, ansi_colors):
+    hex = hsv_colors_to_hex_codes(ansi_colors)
+    black =    0
+    red =      2
+    green =    4
+    yellow =   6
+    blue =     8
+    magenta =  10
+    cyan =     12
+    white =    14
+
+    sample = """package colorscheme.example
+
+import Stream._
+trait Stream[+A] {
+
+  // The natural recursive solution
+  def toListRecursive: List[A] = this match {
+    case Cons(head, tail) => head() :: tail().toListRecursive
+    case _ => List()
+  }
+
+  def toList: List[A] = {
+    @annotation.tailrec
+    def go(stream: Stream[A], acc: List[A]): List[A] = stream match {
+      case Cons(head, tail) => go(tail(), head() :: acc)
+      case _ => acc
+    }
+    go(this, List()).reverse
+  }
+}
+
+case object Empty extends Stream[Nothing]
+case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
+"""
+
+    color_groups = [
+        (black, ["::"]),
+        (magenta, ["@annotation.tailrec", "match", "case", ".", ": "]), 
+        (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "acc", "tail(", "tail)", " go", "stream", "reverse"]),
+        (red, ["= ", "=>"]),
+        (green, ["// The natural recursive solution"]),
+        (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
+        (cyan, ["package", "object", "class", "def", "trait", "import"]),
+        (black, ["extends", "+"]),
+        (white, ["{", "}", "[", "]", "(", ")", ","])
+    ]
+
+    width = 1200
+    height = 700
+    terminal_padding = 30
+    text_padding = 10
+
+    html = "<img src='" + img_file_path + "' style='object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px; position: absolute; top: 0; left: 0;'/>"
+    html += "<div style='z-index: 10; padding: " + str(text_padding) + "px; position: absolute; top: " + str(terminal_padding) + "px; left: " + str(terminal_padding) + "px;right: " + str(terminal_padding) + "px;bottom: " + str(terminal_padding) + "px; background-color: rgba(0, 0, 0, 0.85)'><pre style='margin: 0;'>"
+
+    for group in color_groups:
+        for word in group[1]:
+            sample = sample.replace(word, wrap_in_span(word, hex[group[0]]))
+    
+    html += sample
+    html += "</pre></div>"
+
+    img_preview = "<img src='" + img_file_path + "' style='margin-bottom: 40px; object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px;'/>"
+
+    return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
+
 def get_html_contents(center, improved_centers, img_file_path):
     print("generating html preview...")
-    html = "<img src='" + img_file_path + "' style='max-width: 100%'/>"
-    html += "<div style='display: flex; overflow: scroll;'>"
-    html += html_color_list("3D HSV", sort_by_h(centers))
-    html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
-    html += html_color_list("4D HSV", sort_by_h(improved_centers))
-    html += html_color_list("Filtered 4D HSV", filter_by_custom(improved_centers))
-    html += html_color_list("Filtered 4D HSV Comp", custom_filter_and_sort_complements(improved_centers))
-    html += "</div>"
+    html = get_preview_image(img_file_path, custom_filter_and_sort_complements(improved_centers))
+    # html += "<div style='display: flex; overflow: scroll;'>"
+    # html += html_color_list("3D HSV", sort_by_h(centers))
+    # html += html_color_list("Filtered 3D HSV", custom_filter_and_sort(centers))
+    # html += html_color_list("4D HSV", sort_by_h(improved_centers))
+    # html += html_color_list("Filtered 4D HSV", filter_by_custom(improved_centers))
+    # html += html_color_list("Filtered 4D HSV Comp", custom_filter_and_sort_complements(improved_centers))
+    # html += "</div>"
     return html
 
 html_contents = ""
