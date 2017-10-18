@@ -286,7 +286,8 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     color_groups = [
         (black, ["::"]),
         (yellow, ["tail: "]),
-        (magenta, ["@annotation.tailrec", "match", "case", ".", ": "]), 
+        (white, [": "]),
+        (magenta, ["@annotation.tailrec", "match", "case", "."]), 
         (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "acc", "tail(", "tail)", " go", "stream", "reverse"]),
         (red, ["= ", "=>"]),
         (green, ["// The natural recursive solution"]),
