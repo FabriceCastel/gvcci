@@ -312,7 +312,8 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     vim = ''
     for i in range(28):
         prefix = str(i + 1) + ' '
-        if (i < 10):
+
+        if (i + 1 < 10):
             prefix = ' ' + prefix
 
         prefix = wrap_in_span(prefix, hex[black])
