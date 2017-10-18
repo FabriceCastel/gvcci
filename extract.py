@@ -311,7 +311,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     lines = sample.split('\n')
     vim = ''
     for i in range(28):
-        prefix = str(i) + ' '
+        prefix = str(i + 1) + ' '
         if (i < 10):
             prefix = ' ' + prefix
 
