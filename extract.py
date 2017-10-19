@@ -126,7 +126,7 @@ def filter_v_and_sort_by_h(colors):
 def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
-def generate_complementary(colors, delta_l = 0.12, delta_s = 0.2):
+def generate_complementary(colors, delta_l = 0.12):
     base = np.copy(colors)
     num_colors = base.shape[0]
     # avg_s = np.sum(colors[:,1]) / num_colors
@@ -136,14 +136,14 @@ def generate_complementary(colors, delta_l = 0.12, delta_s = 0.2):
         complements[i] = base[i]
         if (colors[i][2] < avg_l):
             complements[i][2] += delta_l
-            complements[i][1] += delta_s * base[i][2] # the lighter the colour, the bigger impact a shift in lightness has on the saturation, so this multiplication by the lightness is an attempt to curb that
+            complements[i][1] += complements[i][2] ** 5
         else:
             base[i][2] -= delta_l
-            base[i][1] -= delta_s * base[i][2]
-            if complements[i][2] > 0.98:
-                base[i][1] *= 0.01 # past a certain light level it's basically white and shouldn't add saturation to the complement
+            base[i][1] -= complements[i][2] ** 5 # when the light value is high, put a HARD dampener on the saturation of the darker complement
 
     complements = np.clip(complements, 0, 1)
+    base = np.clip(base, 0, 1)
+    
     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
     combined[0::2] = base
     combined[1::2] = complements
@@ -169,7 +169,7 @@ def custom_filter_and_sort_complements(colors):
 
     # TODO do something about the fact that saturated blues need higher V to be legible
     # TODO use constrast function to calculate the delta between the bg color and the current color?
-    
+
     sorted = sort_by_v(colors)
     above_v_lower_bound = colors[colors[:,2] >= v_lower_bound]
 
