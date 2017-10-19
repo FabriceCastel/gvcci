@@ -38,10 +38,14 @@ def get_pixels_for_image(img_file_path):
     return hsl_colors
 
 # convert the hue component into two values, sin(pi * h) and cos(pi * h)
-def hsl_to_hhsl(colors):
-    cos_h = np.cos(2 * np.pi * colors[:,0])
-    sin_h = np.sin(2 * np.pi * colors[:,0])
+def hsl_to_hhsl(hsl_colors):
+    cos_h = np.cos(2 * np.pi * hsl_colors[:,0])
+    sin_h = np.sin(2 * np.pi * hsl_colors[:,0])
     hh_colors = np.vstack((cos_h, sin_h)).T
+
+    # scale the size of the hh circle with the lightness for a bicone shape
+    hh_colors = 2 * np.multiply(hh_colors, (0.5 - np.abs(0.5 - hsl_colors[:,2])).reshape(-1, 1))
+
     return np.vstack((hh_colors[:,0], hh_colors[:,1], hsl_colors[:,1], hsl_colors[:,2])).T
 
 def hhsl_cluster_centers(colors):
@@ -50,8 +54,8 @@ def hhsl_cluster_centers(colors):
     return kmeans_hhsl.cluster_centers_
 
 def hh_cluster_centers_to_h_cluster_centers(hh_centers):
-    circular_hue_center_radii = np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1])
-    circular_hue_center_radii = np.reshape(circular_hue_center_radii, (n_clusters, 1))
+    circular_hue_center_radii = np.sqrt(np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1]))
+    circular_hue_center_radii = np.reshape(circular_hue_center_radii, (-1, 1))
     norm_circular_hue_centers = hh_centers / circular_hue_center_radii
     norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
     return hcos_hsin_to_h(norm_circular_hue_centers)
@@ -70,6 +74,7 @@ def hcos_hsin_to_h(hh_array):
     return np.array(h_array).reshape(-1, 1)
 
 def hhsl_to_hsl(colors):
+    print(colors * 100)
     h = hh_cluster_centers_to_h_cluster_centers(colors[:,0:2])
     s = colors[:,2].reshape(-1, 1)
     v = colors[:,3].reshape(-1, 1)
@@ -143,7 +148,7 @@ def generate_complementary(colors, delta_l = 0.12):
 
     complements = np.clip(complements, 0, 1)
     base = np.clip(base, 0, 1)
-    
+
     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
     combined[0::2] = base
     combined[1::2] = complements
@@ -153,8 +158,8 @@ def distance_between_colors(a, b):
     # HSL looks like a bicone, the distance function should take this into account
 
     # adjust the saturation component for more accurate distance calculation
-    sa = (0.5 - abs(0.5 - a[2])) * a[1]
-    sb = (0.5 - abs(0.5 - b[2])) * b[2]
+    sa = 2 * (0.5 - abs(0.5 - a[2])) * a[1]
+    sb = 2 * (0.5 - abs(0.5 - b[2])) * b[2]
     ds = sa - sb
 
     dh = a[0] - b[0]
@@ -162,11 +167,19 @@ def distance_between_colors(a, b):
 
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
+# TODO add legit implementation for this!
+# https://webaim.org/resources/contrastchecker/
+# TODO !!!
+def contrast_between(a, b):
+    return abs(a[2] - b[2])
+
 def custom_filter_and_sort_complements(colors):
+    background_color = [0, 0, 0] # constant, for now
+
     print("Pruning similar colors...")
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
-    v_lower_bound = 0.45 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
-
+    min_contrast = 0.4 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
+    v_lower_bound = 0.4
     # TODO do something about the fact that saturated blues need higher V to be legible
     # TODO use constrast function to calculate the delta between the bg color and the current color?
 
