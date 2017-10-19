@@ -48,6 +48,7 @@ def hsl_to_hhsl(hsl_colors):
 
     return np.vstack((hh_colors[:,0], hh_colors[:,1], hsl_colors[:,1], hsl_colors[:,2])).T
 
+# TODO maybe get a measure for how representative the clusters are for the set and prune the ones that score lower?
 def hhsl_cluster_centers(colors):
     kmeans_model_hhsl = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
     kmeans_hhsl = kmeans_model_hhsl.fit(hsl_to_hhsl(colors))
@@ -74,7 +75,6 @@ def hcos_hsin_to_h(hh_array):
     return np.array(h_array).reshape(-1, 1)
 
 def hhsl_to_hsl(colors):
-    print(colors * 100)
     h = hh_cluster_centers_to_h_cluster_centers(colors[:,0:2])
     s = colors[:,2].reshape(-1, 1)
     v = colors[:,3].reshape(-1, 1)
@@ -154,6 +154,7 @@ def generate_complementary(colors, delta_l = 0.12):
     combined[1::2] = complements
     return combined
 
+# TODO use a combination of contrast and delta hue here?
 def distance_between_colors(a, b):
     # HSL looks like a bicone, the distance function should take this into account
 
@@ -364,13 +365,13 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 def get_html_contents(center, improved_centers, img_file_path):
     print("generating html preview...")
     html = get_preview_image(img_file_path, custom_filter_and_sort_complements(improved_centers))
-    html += "<div style='display: flex; overflow: scroll;'>"
-    html += html_color_list("3D HSL", sort_by_h(centers))
-    html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
-    html += html_color_list("4D HSL", sort_by_h(improved_centers))
-    html += html_color_list("Filtered 4D HSL", filter_by_custom(improved_centers))
-    html += html_color_list("Filtered 4D HSL Comp", custom_filter_and_sort_complements(improved_centers))
-    html += "</div>"
+    # html += "<div style='display: flex; overflow: scroll;'>"
+    # html += html_color_list("3D HSL", sort_by_h(centers))
+    # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
+    # html += html_color_list("4D HSL", sort_by_h(improved_centers))
+    # html += html_color_list("Filtered 4D HSL", filter_by_custom(improved_centers))
+    # html += html_color_list("Filtered 4D HSL Comp", custom_filter_and_sort_complements(improved_centers))
+    # html += "</div>"
     return html
 
 html_contents = ""
@@ -389,6 +390,6 @@ for i in range(1, len(sys.argv)):
     html += "</div>"
     html += "</body>\n"
 
-    result_file = open("result.html", "w")
+    result_file = open("examples.html", "w")
     result_file.write(html)
     result_file.close()
