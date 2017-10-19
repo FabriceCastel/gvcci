@@ -167,8 +167,9 @@ def custom_filter_and_sort_complements(colors):
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
     v_lower_bound = 0.45 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
 
-    # do something about the fact that saturated blues need higher V to be legible
-
+    # TODO do something about the fact that saturated blues need higher V to be legible
+    # TODO use constrast function to calculate the delta between the bg color and the current color?
+    
     sorted = sort_by_v(colors)
     above_v_lower_bound = colors[colors[:,2] >= v_lower_bound]
 
