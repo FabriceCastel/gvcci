@@ -279,6 +279,14 @@ def wrap_in_span(text, color):
 
 def get_preview_image(img_file_path, ansi_colors):
     hex = hsl_colors_to_hex_codes(ansi_colors)
+
+    print("===============================================")
+    print("ANSI color scheme for " + img_file_path)
+    print("Normal   Bright")
+    for j in range(len(hex) // 2):
+        print(hex[j] + "  " + hex[j + 1])
+    print("===============================================")
+
     black =    0
     red =      2
     green =    4
