@@ -1,39 +1,493 @@
 <body style='background: #000'>
-<div><img src='/Users/fab/Projects/py-colors/examples/250px-Nursery_of_New_Stars_-_GPN-2000-000972.jpg' style='margin-bottom: 40px; object-fit: contain; height: 700px; width: 1200px;'/><div style='margin-bottom: 200px; height: 700px; width: 1200px; overflow: hidden; position: relative;'><img src='/Users/fab/Projects/py-colors/examples/250px-Nursery_of_New_Stars_-_GPN-2000-000972.jpg' style='object-fit: cover; height: 700px; width: 1200px; position: absolute; top: 0; left: 0;'/><div style='z-index: 10; padding: 14px; position: absolute; top: 30px; left: 30px;right: 30px;bottom: 30px; background-color: rgba(0, 0, 0, 0.85)'><pre style='margin: 0;'><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 1 </span><span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>package</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>colorscheme</span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>.</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>example</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 2 </span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 3 </span><span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>import</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>.</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>_</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 4 </span><span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>trait</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>+</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span> <span style='font-family:monospace;font-size:18px;color:#7e996a;'>{</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 5 </span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 6 </span>  <span style='font-family:monospace;font-size:18px;color:#a1a1a1;'>// The natural recursive solution</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 7 </span>  <span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'><span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList</span>Recursive</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#939f70;'>List<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= </span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>this</span> <span style='font-family:monospace;font-size:18px;color:#689c7e;'>match</span> <span style='font-family:monospace;font-size:18px;color:#7e996a;'>{</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 8 </span>    <span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>head</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span></span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>head</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span> <span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>::</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span></span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>.</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'><span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList</span>Recursive</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 9 </span>    <span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>_</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span><span style='font-family:monospace;font-size:18px;color:#939f70;'> List</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>10 </span>  <span style='font-family:monospace;font-size:18px;color:#7e996a;'>}</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>11 </span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>12 </span>  <span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#939f70;'>List<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= </span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>{</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>13 </span>    <span style='font-family:monospace;font-size:18px;color:#689c7e;'>@annotation<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.</span>tailrec</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>14 </span>    <span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'> go</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#939f70;'>List<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#939f70;'>List<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= </span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>stream</span> <span style='font-family:monospace;font-size:18px;color:#689c7e;'>match</span> <span style='font-family:monospace;font-size:18px;color:#7e996a;'>{</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>15 </span>      <span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>head</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span></span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span><span style='font-family:monospace;font-size:18px;color:#aa9968;'> go</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span></span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>head</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span> <span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>::</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>16 </span>      <span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>_</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>17 </span>    <span style='font-family:monospace;font-size:18px;color:#7e996a;'>}</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>18 </span>   <span style='font-family:monospace;font-size:18px;color:#aa9968;'> go</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>this</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span><span style='font-family:monospace;font-size:18px;color:#939f70;'> List</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>.</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>reverse</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>19 </span>  <span style='font-family:monospace;font-size:18px;color:#7e996a;'>}</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>20 </span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>}</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>21 </span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>22 </span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>object</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Empty</span> <span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>extends</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>Nothing</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>23 </span><span style='font-family:monospace;font-size:18px;color:#689c7e;'>case</span> <span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>class</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>+</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#aa9968;'>head</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>,</span> <span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: </span></span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>(</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span> <span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=></span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>)</span> <span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>extends</span> <span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>[</span><span style='font-family:monospace;font-size:18px;color:#939f70;'>A</span><span style='font-family:monospace;font-size:18px;color:#7e996a;'>]</span>
-<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>24 </span>
+<div>
+<img src='/Users/fab/Projects/py-colors/examples/250px-Nursery_of_New_Stars_-_GPN-2000-000972.jpg' style='margin-bottom: 40px; object-fit: contain; height: 700px; width: 1200px;'/>
+<div style='margin-bottom: 200px; height: 700px; width: 1200px; overflow: hidden; position: relative;'>
+<img src='/Users/fab/Projects/py-colors/examples/250px-Nursery_of_New_Stars_-_GPN-2000-000972.jpg' style='object-fit: cover; height: 700px; width: 1200px; position: absolute; top: 0; left: 0;'/>
+<div style='z-index: 10; padding: 14px; position: absolute; top: 30px; left: 30px;right: 30px;bottom: 30px; background-color: rgba(0, 0, 0, 0.85)'>
+<pre style='margin: 0;'>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 1 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>package
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>colorscheme
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>example
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 2 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 3 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>import
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>_
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 4 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>trait
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>{
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 5 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 6 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#a1a1a1;'>// The natural recursive solution
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 7 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList
+</span>Recursive
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>List
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>this
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>match
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>{
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 8 
+</span>    
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>head
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>head
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>::
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList
+</span>Recursive
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'> 9 
+</span>    
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>_
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'> List
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>10 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>}
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>11 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>12 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>toList
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>List
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>{
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>13 
+</span>    
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>@annotation
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.
+</span>tailrec
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>14 
+</span>    
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>def
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'> go
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>List
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>List
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>= 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>stream
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>match
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>{
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>15 
+</span>      
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>head
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'> go
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>head
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>::
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>16 
+</span>      
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>_
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>acc
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>17 
+</span>    
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>}
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>18 
+</span>   
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'> go
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>this
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'> List
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>reverse
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>19 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>}
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>20 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>}
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>21 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>22 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>object
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Empty
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>extends
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Nothing
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>23 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#689c7e;'>case
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#9a9a5b;'>class
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Cons
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>head
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>,
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#aa9968;'>tail
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>: 
+</span>
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>(
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b69f7d;'>=>
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>)
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>extends
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#939f70;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#7e996a;'>]
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>24 
+</span>
+
 <span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
-</span><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
-</span><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
-</span><span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
-</span></pre></div></div><img src='/Users/fab/Projects/py-colors/examples/3262425-trailer_pyre_2017720.jpg' style='margin-bottom: 40px; object-fit: contain; height: 700px; width: 1200px;'/><div style='margin-bottom: 200px; height: 700px; width: 1200px; overflow: hidden; position: relative;'><img src='/Users/fab/Projects/py-colors/examples/3262425-trailer_pyre_2017720.jpg' style='object-fit: cover; height: 700px; width: 1200px; position: absolute; top: 0; left: 0;'/><div style='z-index: 10; padding: 14px; position: absolute; top: 30px; left: 30px;right: 30px;bottom: 30px; background-color: rgba(0, 0, 0, 0.85)'><pre style='margin: 0;'><span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 1 </span><span style='font-family:monospace;font-size:18px;color:#b17646;'>package</span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>colorscheme</span><span style='font-family:monospace;font-size:18px;color:#dc222a;'>.</span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>example</span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 2 </span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 3 </span><span style='font-family:monospace;font-size:18px;color:#b17646;'>import</span> <span style='font-family:monospace;font-size:18px;color:#9e9492;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#dc222a;'>.</span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>_</span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 4 </span><span style='font-family:monospace;font-size:18px;color:#b17646;'>trait</span> <span style='font-family:monospace;font-size:18px;color:#9e9492;'>Stream</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>[</span><span style='font-family:monospace;font-size:18px;color:#c8b5b3;'>+</span><span style='font-family:monospace;font-size:18px;color:#9e9492;'>A</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>]</span> <span style='font-family:monospace;font-size:18px;color:#917f99;'>{</span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 5 </span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 6 </span>  <span style='font-family:monospace;font-size:18px;color:#50a6e1;'>// The natural recursive solution</span>
-<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 7 </span>  <span style='font-family:monospace;font-size:18px;color:#b17646;'>def</span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>toList</span>Recursive</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>: </span><span style='font-family:monospace;font-size:18px;color:#9e9492;'>List<span style='font-family:monospace;font-size:18px;color:#917f99;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#9e9492;'>A</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>]</span> <span style='font-family:monospace;font-size:18px;color:#35dde6;'>= </span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>this</span> <span style='font-family:monospace;font-size:18px;color:#dc222a;'>match</span> <span style='font-family:monospace;font-size:18px;color:#917f99;'>{</span>
+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c4c4c4;'>~
+
+</span>
+</pre>
+</div>
+</div>
+<img src='/Users/fab/Projects/py-colors/examples/3262425-trailer_pyre_2017720.jpg' style='margin-bottom: 40px; object-fit: contain; height: 700px; width: 1200px;'/>
+<div style='margin-bottom: 200px; height: 700px; width: 1200px; overflow: hidden; position: relative;'>
+<img src='/Users/fab/Projects/py-colors/examples/3262425-trailer_pyre_2017720.jpg' style='object-fit: cover; height: 700px; width: 1200px; position: absolute; top: 0; left: 0;'/>
+<div style='z-index: 10; padding: 14px; position: absolute; top: 30px; left: 30px;right: 30px;bottom: 30px; background-color: rgba(0, 0, 0, 0.85)'>
+<pre style='margin: 0;'>
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 1 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#b17646;'>package
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>colorscheme
+</span>
+<span style='font-family:monospace;font-size:18px;color:#dc222a;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>example
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 2 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 3 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#b17646;'>import
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#9e9492;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#dc222a;'>.
+</span>
+<span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>_
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 4 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#b17646;'>trait
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#9e9492;'>Stream
+</span>
+<span style='font-family:monospace;font-size:18px;color:#917f99;'>[
+</span>
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'>+
+</span>
+<span style='font-family:monospace;font-size:18px;color:#9e9492;'>A
+</span>
+<span style='font-family:monospace;font-size:18px;color:#917f99;'>]
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#917f99;'>{
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 5 
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 6 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#50a6e1;'>// The natural recursive solution
+</span>
+
+<span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 7 
+</span>  
+<span style='font-family:monospace;font-size:18px;color:#b17646;'>def
+</span> 
+<span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>
+<span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>toList
+</span>Recursive
+</span>
+<span style='font-family:monospace;font-size:18px;color:#917f99;'>: 
+</span>
+<span style='font-family:monospace;font-size:18px;color:#9e9492;'>List<span style='font-family:monospace;font-size:18px;color:#917f99;'>[</span></span><span style='font-family:monospace;font-size:18px;color:#9e9492;'>A</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>]</span> <span style='font-family:monospace;font-size:18px;color:#35dde6;'>= </span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>this</span> <span style='font-family:monospace;font-size:18px;color:#dc222a;'>match</span> <span style='font-family:monospace;font-size:18px;color:#917f99;'>{</span>
 <span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 8 </span>    <span style='font-family:monospace;font-size:18px;color:#dc222a;'>case</span> <span style='font-family:monospace;font-size:18px;color:#9e9492;'>Cons</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>(</span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>head</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>,</span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>tail<span style='font-family:monospace;font-size:18px;color:#917f99;'>)</span></span> <span style='font-family:monospace;font-size:18px;color:#35dde6;'>=></span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>head</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>(</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>)</span> <span style='font-family:monospace;font-size:18px;color:#c8b5b3;'>::</span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>tail<span style='font-family:monospace;font-size:18px;color:#917f99;'>(</span></span><span style='font-family:monospace;font-size:18px;color:#917f99;'>)</span><span style='font-family:monospace;font-size:18px;color:#dc222a;'>.</span><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'><span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>toList</span>Recursive</span>
 <span style='font-family:monospace;font-size:18px;color:#c8b5b3;'> 9 </span>    <span style='font-family:monospace;font-size:18px;color:#dc222a;'>case</span> <span style='font-family:monospace;font-size:18px;color:#b2b2b2;'>_</span> <span style='font-family:monospace;font-size:18px;color:#35dde6;'>=></span><span style='font-family:monospace;font-size:18px;color:#9e9492;'> List</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>(</span><span style='font-family:monospace;font-size:18px;color:#917f99;'>)</span>
 <span style='font-family:monospace;font-size:18px;color:#c8b5b3;'>10 </span>  <span style='font-family:monospace;font-size:18px;color:#917f99;'>}</span>
