@@ -282,9 +282,13 @@ def get_preview_image(img_file_path, ansi_colors):
 
     print("===============================================")
     print("ANSI color scheme for " + img_file_path)
-    print("Normal   Bright")
+    print("Normal")
     for j in range(len(hex) // 2):
-        print(hex[j] + "  " + hex[j + 1])
+        print(hex[2*j])
+    print("")
+    print("Bright")
+    for j in range(len(hex) // 2):
+        print(hex[2*j + 1])
     print("===============================================")
 
     black =    0
