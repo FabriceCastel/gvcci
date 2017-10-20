@@ -6,7 +6,7 @@ The main flaw with ```wal``` is that it often missed smaller pops of differentia
 
 For some examples, check out: http://fabricecastel.github.io/colors/examples.html
 
-The project is still very much a work in progress, with background color logic in the works so that you can choose between light, dark & custom background colors. Feel free to join in the discussion via the github issues page, or the thread on /r/unixporn [here].(https://www.reddit.com/r/unixporn/comments/77iagc/writing_a_new_tool_to_extract_terminal_colour/)
+The project is still very much a work in progress, with background color logic in the works so that you can choose between light, dark & custom background colors. Feel free to join in the discussion via the github issues page, or the thread on /r/unixporn [here](https://www.reddit.com/r/unixporn/comments/77iagc/writing_a_new_tool_to_extract_terminal_colour/)
 
 # Setup
 
