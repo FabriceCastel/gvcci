@@ -357,6 +357,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 """
 
     color_groups = [
+        (cyan, ["def"]),
         (yellow, ["acc"]),
         (black, ["::"]),
         (yellow, ["tail: "]),
@@ -366,7 +367,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
         (red, ["= ", "=>"]),
         (green, ["// The natural recursive solution"]),
         (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
-        (cyan, ["package", "object", "class", "def", "trait", "import"]),
+        (cyan, ["package", "object", "class", "trait", "import"]),
         (black, ["extends", "+"]),
         (white, ["{", "}", "[", "]", "(", ")", ","])
     ]
@@ -432,7 +433,9 @@ for i in range(1, len(sys.argv)):
     precision = 32
     dark_l = 0.2;
     light_l = 0.8;
+    light_l_upper = 0.95;
     dark_and_light_colors = np.vstack((hsl_colors[hsl_colors[:,2] > light_l], hsl_colors[hsl_colors[:,2] < dark_l]))
+    dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < light_l_upper]
     # dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < dark_l]
     bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
     bg_fg_colors = np.vstack((bg_color, bg_color))
