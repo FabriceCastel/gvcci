@@ -357,11 +357,12 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 """
 
     color_groups = [
+        (yellow, ["acc"]),
         (black, ["::"]),
         (yellow, ["tail: "]),
         (white, [": "]),
         (magenta, ["@annotation.tailrec", "match", "case", "."]), 
-        (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "acc", "tail(", "tail)", " go", "stream", "reverse"]),
+        (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "tail(", "tail)", " go", "stream", "reverse"]),
         (red, ["= ", "=>"]),
         (green, ["// The natural recursive solution"]),
         (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
@@ -414,7 +415,7 @@ def get_html_contents(center, improved_centers, bg_and_fg_colors, img_file_path)
     # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
     # html += html_color_list("4D HSL", sort_by_h(improved_centers))
     # html += html_color_list("Filtered 4D HSL", filter_by_custom(improved_centers))
-    html += html_color_list("Filtered 4D HSL Comp", colors)
+    # html += html_color_list("Filtered 4D HSL Comp", colors)
     html += "</div>"
     return html
 
@@ -435,6 +436,10 @@ for i in range(1, len(sys.argv)):
     # dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < dark_l]
     bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
     bg_fg_colors = np.vstack((bg_color, bg_color))
+
+    # TODO the gb colour detection sucks for light colors
+    # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
+    # TODO bg color breaks for the isaac example because the black bg is a flat #000000 color that's filtered out
 
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
