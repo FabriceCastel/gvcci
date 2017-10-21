@@ -48,10 +48,24 @@ def hsl_to_hhsl(hsl_colors):
 
     return np.vstack((hh_colors[:,0], hh_colors[:,1], hsl_colors[:,1], hsl_colors[:,2])).T
 
+def mode_rows(a):
+    a = np.ascontiguousarray(a)
+    void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
+    _,ids, count = np.unique(a.view(void_dt).ravel(), \
+                                return_index=1,return_counts=1)
+    largest_count_id = ids[count.argmax()]
+    return a[largest_count_id]
+    # print(count)
+    # print(a)
+    # most_frequent_rows = a[np.argsort(count)]
+    # return most_frequent_rows
+
 # TODO maybe get a measure for how representative the clusters are for the set and prune the ones that score lower?
 def hhsl_cluster_centers(colors):
     kmeans_model_hhsl = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
     kmeans_hhsl = kmeans_model_hhsl.fit(hsl_to_hhsl(colors))
+    labels = kmeans_hhsl.labels_
+    
     return kmeans_hhsl.cluster_centers_
 
 def hh_cluster_centers_to_h_cluster_centers(hh_centers):
@@ -116,15 +130,7 @@ def custom_sort(colors, bg_color):
     s = colors[:,1]
     v = colors[:,2]
 
-    # TODO - this is a hack, it'll sort higher brightness colours first if the bg is dark,
-    #        otherwise it flips the ordering if the bg is light
-    bg_is_dark = bg_color[2] < 0.5
-
-    flip_order = 1
-    if (bg_is_dark):
-        flip_order = -1
-
-    sort_criteria = flip_order * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
+    sort_criteria = -1 * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
     return colors[np.argsort(sort_criteria)]
 
 def filter_by_custom(colors):
@@ -186,7 +192,7 @@ def distance_between_colors(a, b):
 
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
-def custom_filter_and_sort_complements(colors, bg_color = np.array([0, 0, 0])):
+def custom_filter_and_sort_complements(colors, bg_color = np.array([1, 1, 1])):
     print("Pruning similar colors...")
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
     min_contrast = 0.4
@@ -246,7 +252,7 @@ def custom_filter_and_sort_complements(colors, bg_color = np.array([0, 0, 0])):
 
     result = custom_sort(above_min_contrast_threshold, bg_color)[:n_colors // 2]
 
-    bg_and_fg = np.array([[0, 0, 0], [1, 1, 1]]).reshape(-1, 3)
+    bg_and_fg = np.array([[1, 1, 1], [1, 1, 1]]).reshape(-1, 3)
 
     return np.vstack((bg_and_fg, generate_complementary(result)))
 
@@ -285,11 +291,13 @@ def html_color_list(title, colors, col_width = 300):
 def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
-def get_preview_image(img_file_path, ansi_colors):
-    hex = hsl_colors_to_hex_codes(ansi_colors)
+def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
+    hex = hsl_colors_to_hex_codes(np.vstack((bg_and_fg_colors, ansi_colors)))
 
     bg_color = hex[0]
     fg_color = hex[1]
+
+    bg_rgb = h = tuple(int(hex[0].lstrip('#')[i:i+2], 16) for i in (0, 2 ,4))
 
     hex = hex[2:]
 
@@ -358,7 +366,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     text_padding = 14
 
     html = "<img src='" + img_file_path + "' style='object-fit: cover; height: " + str(height) + "px; width: " + str(width) + "px; position: absolute; top: 0; left: 0;'/>"
-    html += "<div style='z-index: 10; padding: " + str(text_padding) + "px; position: absolute; top: " + str(terminal_padding) + "px; left: " + str(terminal_padding) + "px;right: " + str(terminal_padding) + "px;bottom: " + str(terminal_padding) + "px; background-color: rgba(0, 0, 0, 0.85)'><pre style='margin: 0;'>"
+    html += "<div style='z-index: 10; padding: " + str(text_padding) + "px; position: absolute; top: " + str(terminal_padding) + "px; left: " + str(terminal_padding) + "px;right: " + str(terminal_padding) + "px;bottom: " + str(terminal_padding) + "px; background-color: rgba(" + str(bg_rgb[0]) + ", " +str(bg_rgb[1]) + ", " +str(bg_rgb[2]) + ", 0.85)'><pre style='margin: 0;'>"
 
     for group in color_groups:
         for word in group[1]:
@@ -387,9 +395,9 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
 
-def get_html_contents(center, improved_centers, img_file_path):
+def get_html_contents(center, improved_centers, bg_and_fg_colors, img_file_path):
     print("generating html preview...")
-    html = get_preview_image(img_file_path, custom_filter_and_sort_complements(improved_centers))
+    html = get_preview_image(img_file_path, custom_filter_and_sort_complements(improved_centers, bg_and_fg_colors[0]), bg_and_fg_colors)
     # html += "<div style='display: flex; overflow: scroll;'>"
     # html += html_color_list("3D HSL", sort_by_h(centers))
     # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
@@ -409,7 +417,13 @@ for i in range(1, len(sys.argv)):
     improved_centers = hhsl_to_hsl(hhsl_centers)
     centers = hsl_cluster_centers(hsl_colors)
 
-    html_contents += get_html_contents(centers, improved_centers, img_file_path)
+    precision = 32
+    bg_color = mode_rows((hsl_colors * precision).astype(int)).reshape(1, 3) / precision
+    bg_fg_colors = np.vstack((bg_color, bg_color))
+
+    # improved_centers = np.vstack((bg_fg_colors, improved_centers))
+
+    html_contents += get_html_contents(centers, improved_centers, bg_fg_colors, img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
     html += html_contents
