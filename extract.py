@@ -29,12 +29,12 @@ def get_pixels_for_image(img_file_path):
     img_hsl = hasel.rgb2hsl(img_rgb)
     hsl_colors = img_hsl.reshape((-1, 3))
 
-    print("filtering out darkest colors before clustering for better results...")
-    samples_before = hsl_colors.shape[0]
-    hsl_colors = hsl_colors[hsl_colors[:,2] > v_threshold]
-    samples_after = hsl_colors.shape[0]
+    # print("filtering out darkest colors before clustering for better results...")
+    # samples_before = hsl_colors.shape[0]
+    # hsl_colors = hsl_colors[hsl_colors[:,2] > v_threshold]
+    # samples_after = hsl_colors.shape[0]
 
-    print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
+    # print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
     return hsl_colors
 
 # convert the hue component into two values, sin(pi * h) and cos(pi * h)
@@ -101,12 +101,30 @@ def trim_colors(colors, property, keep):
     sorted = sort_by_property(colors, property)
     return sorted[keep:]
 
-def custom_sort(colors):
+# TODO add legit implementation for this!
+# https://webaim.org/resources/contrastchecker/
+# TODO !!!
+def contrast_between(a, b):
+    return np.abs(a[2] - b[2])
+
+def contrast_between_all(a, b):
+    return np.abs(a.reshape(-1, 3)[:,2] - b.reshape(-1, 3)[:,2])
+
+def custom_sort(colors, bg_color):
     pow_s = 1
     pow_v = 1
     s = colors[:,1]
     v = colors[:,2]
-    sort_criteria = -1 * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
+
+    # TODO - this is a hack, it'll sort higher brightness colours first if the bg is dark,
+    #        otherwise it flips the ordering if the bg is light
+    bg_is_dark = bg_color[2] < 0.5
+
+    flip_order = 1
+    if (bg_is_dark):
+        flip_order = -1
+
+    sort_criteria = flip_order * (v + (np.power(s, pow_s) * np.power(v, pow_v)))
     return colors[np.argsort(sort_criteria)]
 
 def filter_by_custom(colors):
@@ -168,41 +186,28 @@ def distance_between_colors(a, b):
 
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
-# TODO add legit implementation for this!
-# https://webaim.org/resources/contrastchecker/
-# TODO !!!
-def contrast_between(a, b):
-    return abs(a[2] - b[2])
-
-def custom_filter_and_sort_complements(colors):
-    background_color = [0, 0, 0] # constant, for now
-
+def custom_filter_and_sort_complements(colors, bg_color = np.array([0, 0, 0])):
     print("Pruning similar colors...")
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
-    min_contrast = 0.4 # if you can't remove similar colors without making the lowest V of the filtered group fall below this, then don't do it
-    v_lower_bound = 0.4
-    # TODO do something about the fact that saturated blues need higher V to be legible
-    # TODO use constrast function to calculate the delta between the bg color and the current color?
+    min_contrast = 0.4
 
-    sorted = sort_by_v(colors)
-    above_v_lower_bound = colors[colors[:,2] >= v_lower_bound]
+    above_min_contrast_threshold = colors[contrast_between_all(colors, bg_color) >= min_contrast]
 
-    # distance between two colors' hue/saturation/value
     def dist(a, b):
         return distance_between_colors(a, b)
 
-    if above_v_lower_bound.shape[0] <= (n_colors // 2):
-        result = custom_sort(colors)[:n_colors // 2]
+    if above_min_contrast_threshold.shape[0] <= (n_colors // 2):
+        result = custom_sort(colors, bg_color)[:n_colors // 2]
         return generate_complementary(result)
 
-    while above_v_lower_bound.shape[0] > (n_colors // 2):
-        closest_pair = [above_v_lower_bound[0], above_v_lower_bound[1]]
+    while above_min_contrast_threshold.shape[0] > (n_colors // 2):
+        closest_pair = [above_min_contrast_threshold[0], above_min_contrast_threshold[1]]
         closest_dist = dist(closest_pair[0], closest_pair[1])
         index_1 = 0
         index_2 = 1 # this is so stupid...
-        for i in range(len(above_v_lower_bound)):
-            a = above_v_lower_bound[i]
-            rest = above_v_lower_bound[:]
+        for i in range(len(above_min_contrast_threshold)):
+            a = above_min_contrast_threshold[i]
+            rest = above_min_contrast_threshold[:]
             rest = np.delete(rest, i, 0)
             # closest = min(
             #     map(lambda b: (dist(a, b), b), rest),
@@ -212,8 +217,8 @@ def custom_filter_and_sort_complements(colors):
             # look at all these nested loops.. yeesh ;-;
             min_dist_a = np.inf
             index_b = 0
-            for j in range(len(above_v_lower_bound)):
-                cur_dist = dist(a, above_v_lower_bound[j])
+            for j in range(len(above_min_contrast_threshold)):
+                cur_dist = dist(a, above_min_contrast_threshold[j])
                 if i != j and cur_dist < min_dist_a:
                     min_dist_a = cur_dist
                     index_b = j
@@ -230,17 +235,20 @@ def custom_filter_and_sort_complements(colors):
             print('Colors are still similar, pruning...')
 
         # TODO - be smarter about which of the two colors to remove
-        # index = above_v_lower_bound.index(closes_pair[0])
-        scored = custom_sort(np.array([above_v_lower_bound[index_1], above_v_lower_bound[index_2]]))
+        # index = above_min_contrast_threshold.index(closes_pair[0])
+        scored = custom_sort(np.array([above_min_contrast_threshold[index_1], above_min_contrast_threshold[index_2]]), bg_color)
         a = scored[0]
-        b = above_v_lower_bound[index_1]
+        b = above_min_contrast_threshold[index_1]
         if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
-            above_v_lower_bound = np.delete(above_v_lower_bound, index_2, 0)
+            above_min_contrast_threshold = np.delete(above_min_contrast_threshold, index_2, 0)
         else:
-            above_v_lower_bound = np.delete(above_v_lower_bound, index_1, 0)
+            above_min_contrast_threshold = np.delete(above_min_contrast_threshold, index_1, 0)
 
-    result = custom_sort(above_v_lower_bound)[:n_colors // 2]
-    return generate_complementary(result)
+    result = custom_sort(above_min_contrast_threshold, bg_color)[:n_colors // 2]
+
+    bg_and_fg = np.array([[0, 0, 0], [1, 1, 1]]).reshape(-1, 3)
+
+    return np.vstack((bg_and_fg, generate_complementary(result)))
 
 def get_hex_codes(rgb_list):
     hex_codes = []
@@ -279,6 +287,11 @@ def wrap_in_span(text, color):
 
 def get_preview_image(img_file_path, ansi_colors):
     hex = hsl_colors_to_hex_codes(ansi_colors)
+
+    bg_color = hex[0]
+    fg_color = hex[1]
+
+    hex = hex[2:]
 
     print("===============================================")
     print("ANSI color scheme for " + img_file_path)
@@ -395,6 +408,7 @@ for i in range(1, len(sys.argv)):
     hhsl_centers = hhsl_cluster_centers(hsl_colors)
     improved_centers = hhsl_to_hsl(hhsl_centers)
     centers = hsl_cluster_centers(hsl_colors)
+
     html_contents += get_html_contents(centers, improved_centers, img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
