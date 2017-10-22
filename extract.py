@@ -302,17 +302,26 @@ def html_color_list(title, colors, col_width = 300):
 def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
+def hex2rgb(hex):
+    return tuple(int(hex.lstrip('#')[i:i+2], 16) for i in (0, 2 ,4))
+
 def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
     hex = hsl_colors_to_hex_codes(ansi_colors)
     bg_fg_hex = hsl_colors_to_hex_codes(bg_and_fg_colors)
 
-    bg_rgb = h = tuple(int(bg_fg_hex[0].lstrip('#')[i:i+2], 16) for i in (0, 2 ,4))
+    bg_rgb = hex2rgb(bg_fg_hex[0])
 
     print(hex)
     # hex = hex[2:]
 
     print("===============================================")
     print("ANSI color scheme for " + img_file_path)
+    print("Background")
+    print(bg_fg_hex[0])
+    print("")
+    # print("Foreground")
+    # print(bg_and_fg_colors[1])
+    # print("")
     print("Normal")
     for j in range(len(hex) // 2):
         print(hex[2*j])
@@ -422,23 +431,61 @@ def get_html_contents(center, improved_centers, bg_and_fg_colors, img_file_path)
 
 html_contents = ""
 
-for i in range(1, len(sys.argv)):
-    print("Generating colors for input " + str(i) + " of " + str(len(sys.argv) - 1))
-    img_file_path = sys.argv[i]
+# --background [dark|light|auto|<hex>]
+background_color_param_name = "--background"
+background_color_param = "auto"
+image_paths = []
+
+# TODO look into pythonic way of parsing cmdline arguments
+arg_id = 1
+while arg_id < len(sys.argv):
+    commandline_param = sys.argv[arg_id]
+    if (len(commandline_param) > 2):
+        if (commandline_param == background_color_param_name):
+            background_color_param = sys.argv[arg_id + 1]
+            arg_id += 1
+        else:
+            image_paths.append(commandline_param)
+    arg_id += 1
+
+for img_file_path in image_paths:
+    print("Generating colors for input " + str(img_file_path))
     hsl_colors = get_pixels_for_image(img_file_path)
     hhsl_centers = hhsl_cluster_centers(hsl_colors)
     improved_centers = hhsl_to_hsl(hhsl_centers)
     centers = hsl_cluster_centers(hsl_colors)
 
-    precision = 32
-    dark_l = 0.2;
-    light_l = 0.8;
-    light_l_upper = 0.95;
-    dark_and_light_colors = np.vstack((hsl_colors[hsl_colors[:,2] > light_l], hsl_colors[hsl_colors[:,2] < dark_l]))
-    dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < light_l_upper]
-    # dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < dark_l]
-    bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
-    bg_fg_colors = np.vstack((bg_color, bg_color))
+    bg_and_fg_colors = np.array([[0, 0, 0], [1, 1, 1]]) # fallback values
+
+    if background_color_param == "auto":
+        precision = 32
+        dark_l = 0.2;
+        light_l = 0.8;
+        light_l_upper = 0.95;
+        dark_and_light_colors = np.vstack((hsl_colors[hsl_colors[:,2] > light_l], hsl_colors[hsl_colors[:,2] < dark_l]))
+        dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < light_l_upper]
+        bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+    elif background_color_param == "dark":
+        precision = 32
+        dark_l = 0.2;
+        light_l = 0.8;
+        light_l_upper = 0.95;
+        dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
+        bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+    elif background_color_param == "light":
+        precision = 32
+        light_l = 0.8;
+        light_l_upper = 0.95;
+        light_colors = hsl_colors[hsl_colors[:,2] > light_l]
+        light_colors = light_colors[light_colors[:,2] < light_l_upper]
+        bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+    else:
+        bg_color = hex2rgb(background_color_param)
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+
 
     # TODO the gb colour detection sucks for light colors
     # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
