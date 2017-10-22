@@ -464,24 +464,28 @@ for img_file_path in image_paths:
         light_l_upper = 0.95;
         dark_and_light_colors = np.vstack((hsl_colors[hsl_colors[:,2] > light_l], hsl_colors[hsl_colors[:,2] < dark_l]))
         dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < light_l_upper]
-        bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
+        if (len(dark_and_light_colors) > 0):
+            bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
+            bg_fg_colors = np.vstack((bg_color, bg_color))
     elif background_color_param == "dark":
         precision = 32
         dark_l = 0.2;
         light_l = 0.8;
         light_l_upper = 0.95;
         dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
-        bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
+        if (len(dark_colors) > 0):
+            bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
+            bg_fg_colors = np.vstack((bg_color, bg_color))
     elif background_color_param == "light":
+        bg_and_fg_colors = np.array([[1, 1, 1], [0, 0, 0]]) # fallback values
         precision = 32
         light_l = 0.8;
         light_l_upper = 0.95;
         light_colors = hsl_colors[hsl_colors[:,2] > light_l]
         light_colors = light_colors[light_colors[:,2] < light_l_upper]
-        bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
+        if (len(light_colors) > 0):
+            bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
+            bg_fg_colors = np.vstack((bg_color, bg_color))
     else:
         bg_color = hex2rgb(background_color_param)
         bg_fg_colors = np.vstack((bg_color, bg_color))
