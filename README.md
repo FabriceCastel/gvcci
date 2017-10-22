@@ -24,3 +24,9 @@ To setup the project:
 4. run ```python3 extract.py path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette and generate an html file with some previews that you can open in any web browser.
+
+Supported options:
+
+`--background [auto|light|dark|<hex>]`
+
+`--background` defaults to `auto`, which can pick either a light or dark background depending on the image. the `light` and `dark` options have it pick either a light or a dark color from the image as the background, and `<hex>` allows you to specify a hex code to use as background color.
