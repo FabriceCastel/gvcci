@@ -506,6 +506,7 @@ for img_file_path in image_paths:
             bg_fg_colors = np.vstack((bg_color, bg_color))
     else:
         bg_color = hex2rgb(background_color_param)
+        bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
         bg_fg_colors = np.vstack((bg_color, bg_color))
 
 
