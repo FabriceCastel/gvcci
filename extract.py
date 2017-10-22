@@ -204,10 +204,26 @@ def distance_between_colors(a, b):
 
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
+
+def adjust_contrast(colors, bg):
+    min_contrast = 0.35
+    fixed_colors = np.array([]).reshape(0, 3)
+    for color in colors:
+        delta = np.abs(color[2] - bg[2])
+        fixed_color = color
+        if delta < min_contrast:
+            if bg[2] > 0.5:
+                fixed_color[2] -= delta
+            else:
+                fixed_color[2] += delta
+        fixed_colors = np.vstack((fixed_colors, fixed_color))
+    return fixed_colors
+
+
 def custom_filter_and_sort_complements(colors, bg_color):
     print("Pruning similar colors...")
     distance_threshold = 0.015 # all distances between S/V colors larger than that are OK by default
-    min_contrast = 0.4
+    min_contrast = 0.35
 
     above_min_contrast_threshold = colors[contrast_between_all(colors, bg_color) >= min_contrast]
 
@@ -215,8 +231,9 @@ def custom_filter_and_sort_complements(colors, bg_color):
         return distance_between_colors(a, b)
 
     if above_min_contrast_threshold.shape[0] <= (n_colors // 2):
-        result = custom_sort(colors, bg_color)[:n_colors // 2]
-        return generate_complementary(result), bg_color
+        above_min_contrast_threshold = custom_sort(colors, bg_color)[:n_colors // 2]
+        # result = custom_sort(colors, bg_color)[:n_colors // 2]
+        # return generate_complementary(result), bg_color
 
     while above_min_contrast_threshold.shape[0] > (n_colors // 2):
         closest_pair = [above_min_contrast_threshold[0], above_min_contrast_threshold[1]]
@@ -264,6 +281,7 @@ def custom_filter_and_sort_complements(colors, bg_color):
             above_min_contrast_threshold = np.delete(above_min_contrast_threshold, index_1, 0)
 
     result = custom_sort(above_min_contrast_threshold, bg_color)[:n_colors // 2]
+    result = adjust_contrast(result, bg_color)
 
     return generate_complementary(result), bg_color
 
@@ -455,7 +473,7 @@ for img_file_path in image_paths:
     improved_centers = hhsl_to_hsl(hhsl_centers)
     centers = hsl_cluster_centers(hsl_colors)
 
-    bg_and_fg_colors = np.array([[0, 0, 0], [1, 1, 1]]) # fallback values
+    bg_and_fg_colors = np.array([[0, 0, 0], [0, 0, 1]]) # fallback values
 
     if background_color_param == "auto":
         precision = 32
@@ -477,7 +495,7 @@ for img_file_path in image_paths:
             bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
             bg_fg_colors = np.vstack((bg_color, bg_color))
     elif background_color_param == "light":
-        bg_and_fg_colors = np.array([[1, 1, 1], [0, 0, 0]]) # fallback values
+        bg_and_fg_colors = np.array([[0, 0, 1], [0, 0, 0]]) # fallback values
         precision = 32
         light_l = 0.8;
         light_l_upper = 0.95;
