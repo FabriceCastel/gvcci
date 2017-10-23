@@ -4,22 +4,15 @@ import sys
 import numpy as np
 
 from skimage import io
-# from skimage import color
-
-from sklearn.cluster import MiniBatchKMeans
 
 import hasel
 
-# Constants
-kmeans_batch_size = 100
-n_clusters = 32
+from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
+from converters import hex2rgb, rgb2hex
+
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
 
-# Utils
-def rgb2hex(r,g,b):
-    hex = "#{:02x}{:02x}{:02x}".format(r,g,b)
-    return hex
 
 def get_pixels_for_image(img_file_path):
     print("reading image...")
@@ -37,17 +30,6 @@ def get_pixels_for_image(img_file_path):
     print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
     return hsl_colors
 
-# convert the hue component into two values, sin(pi * h) and cos(pi * h)
-def hsl_to_hhsl(hsl_colors):
-    cos_h = np.cos(2 * np.pi * hsl_colors[:,0])
-    sin_h = np.sin(2 * np.pi * hsl_colors[:,0])
-    hh_colors = np.vstack((cos_h, sin_h)).T
-
-    # scale the size of the hh circle with the lightness for a bicone shape
-    hh_colors = 2 * np.multiply(hh_colors, (0.5 - np.abs(0.5 - hsl_colors[:,2])).reshape(-1, 1))
-
-    return np.vstack((hh_colors[:,0], hh_colors[:,1], hsl_colors[:,1], hsl_colors[:,2])).T
-
 def mode_rows(a):
     a = np.ascontiguousarray(a)
     void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
@@ -59,45 +41,6 @@ def mode_rows(a):
     # print(a)
     # most_frequent_rows = a[np.argsort(count)]
     # return most_frequent_rows
-
-# TODO maybe get a measure for how representative the clusters are for the set and prune the ones that score lower?
-def hhsl_cluster_centers(colors):
-    kmeans_model_hhsl = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
-    kmeans_hhsl = kmeans_model_hhsl.fit(hsl_to_hhsl(colors))
-    labels = kmeans_hhsl.labels_
-    
-    return kmeans_hhsl.cluster_centers_
-
-def hh_cluster_centers_to_h_cluster_centers(hh_centers):
-    circular_hue_center_radii = np.sqrt(np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1]))
-    circular_hue_center_radii = np.reshape(circular_hue_center_radii, (-1, 1))
-    norm_circular_hue_centers = hh_centers / circular_hue_center_radii
-    norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
-    return hcos_hsin_to_h(norm_circular_hue_centers)
-
-def hcos_hsin_to_h(hh_array):
-    h_array = []
-    for i in range(hh_array.shape[0]):
-        cosinus = hh_array[i][0]
-        sinus = hh_array[i][1]
-        original = np.arccos(cosinus)
-        if (sinus < 0):
-            original = (2 * np.pi) - original
-
-        original = original / (2 * np.pi)
-        h_array.append(original)
-    return np.array(h_array).reshape(-1, 1)
-
-def hhsl_to_hsl(colors):
-    h = hh_cluster_centers_to_h_cluster_centers(colors[:,0:2])
-    s = colors[:,2].reshape(-1, 1)
-    v = colors[:,3].reshape(-1, 1)
-    return np.hstack((h, s, v))
-
-def hsl_cluster_centers(colors):
-    kmeans_model_hsl = MiniBatchKMeans(n_clusters = n_clusters, batch_size = kmeans_batch_size)
-    kmeans_hsl = kmeans_model_hsl.fit(hsl_colors)
-    return kmeans_hsl.cluster_centers_
 
 def get_col_for_property(property):
     if (property == 'h'):
@@ -320,9 +263,6 @@ def html_color_list(title, colors, col_width = 300):
 def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
-def hex2rgb(hex):
-    return tuple(int(hex.lstrip('#')[i:i+2], 16) for i in (0, 2 ,4))
-
 def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
     hex = hsl_colors_to_hex_codes(ansi_colors)
     bg_fg_hex = hsl_colors_to_hex_codes(bg_and_fg_colors)
@@ -469,8 +409,7 @@ while arg_id < len(sys.argv):
 for img_file_path in image_paths:
     print("Generating colors for input " + str(img_file_path))
     hsl_colors = get_pixels_for_image(img_file_path)
-    hhsl_centers = hhsl_cluster_centers(hsl_colors)
-    improved_centers = hhsl_to_hsl(hhsl_centers)
+    improved_centers = hhsl_cluster_centers_as_hsl(hsl_colors)
     centers = hsl_cluster_centers(hsl_colors)
 
     bg_and_fg_colors = np.array([[0, 0, 0], [0, 0, 1]]) # fallback values
