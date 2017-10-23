@@ -28,8 +28,9 @@ To setup standard dependencies:
 To setup the project:
 
 1. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/gvcci
-2. run ```python3 setup.py install``` to install the hasel dependency in the directory colorizer-terminator
-3. run ```python3 extract.py path/to/image.jpg``` to run the program
+2. ```cd``` into your local copy of the git repository
+3. ```python3 setup.py install``` to install the hasel dependency
+4. ```python3 extract.py path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette and generate an html file with some previews that you can open in any web browser.
 
