@@ -20,7 +20,7 @@ To setup the project:
 
 1. Download and install Python 3: https://www.python.org/downloads/ (3.6.3 is the most up to date version as of the writing of this readme)
 2. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/colorizer-terminator
-3. run ```python3 setup.py``` to install the dependencies in the directory colorizer-terminator
+3. run ```python3 setup.py install``` to install the dependencies in the directory colorizer-terminator
 4. run ```python3 extract.py path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette and generate an html file with some previews that you can open in any web browser.
