@@ -39,3 +39,14 @@ Running the program will print the generated color palette and generate an html 
 `--background [auto|light|dark|<hex>]`
 
 `--background` defaults to `auto`, which can pick either a light or dark background depending on the image. the `light` and `dark` options have it pick either a light or a dark color from the image as the background, and `<hex>` allows you to specify a hex code to use as background color.
+
+## Roadmap/TODO List
+
+- [ ] Output a foreground color
+- [ ] Assign adequately dark color to the ANSI 'Black' color value
+- [ ] Improve background color selection for light themes
+- [ ] Improve syntax colors for light themes
+- [ ] Refactor the codebase and modularize it where appropriate
+- [ ] Add the ability to use output templates
+- [ ] Add commandline param to set the image as wallpaper
+- [ ] Generalize script? (ie. be able to request X light colors, Y dark colors and Z variants on each color)
