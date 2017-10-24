@@ -8,7 +8,7 @@ from skimage import io
 import hasel
 
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
-from converters import hex2rgb, rgb2hex
+from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex
 
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
@@ -228,13 +228,6 @@ def custom_filter_and_sort_complements(colors, bg_color):
 
     return generate_complementary(result), bg_color
 
-def get_hex_codes(rgb_list):
-    hex_codes = []
-    for i in range(rgb_list.shape[0]):
-        rgb = rgb_list[i]
-        hex_codes.append(rgb2hex(rgb[0], rgb[1], rgb[2]))
-    return hex_codes
-
 def hex_codes_to_html_list(hex_codes, hsl_colors):
     html = "<ul style='padding: 0; list-style-type: none; margin-right: 20px'>\n"
     for i in range(len(hex_codes)):
@@ -243,14 +236,8 @@ def hex_codes_to_html_list(hex_codes, hsl_colors):
         html += "</li>\n"
     return html + "</ul>\n"
 
-def hsl_colors_to_hex_codes(color_list):
-    rgb_colors = hasel.hsl2rgb(color_list.reshape(-1, 1, 3)).reshape(-1, 3)
-    rgb_colors = np.clip(rgb_colors, 0, 255)
-    hex_codes = get_hex_codes(rgb_colors)
-    return hex_codes
-
 def hsl_color_list_to_html_list(color_list):
-    hex_codes = hsl_colors_to_hex_codes(color_list)
+    hex_codes = hsllist2hex(color_list)
     return hex_codes_to_html_list(hex_codes, color_list)
 
 def html_color_list(title, colors, col_width = 300):
@@ -264,8 +251,8 @@ def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
 def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
-    hex = hsl_colors_to_hex_codes(ansi_colors)
-    bg_fg_hex = hsl_colors_to_hex_codes(bg_and_fg_colors)
+    hex = hsllist2hex(ansi_colors)
+    bg_fg_hex = hsllist2hex(bg_and_fg_colors)
 
     bg_rgb = hex2rgb(bg_fg_hex[0])
 
