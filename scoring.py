@@ -157,7 +157,6 @@ def custom_filter_and_sort_complements(colors, bg_color):
         scored = custom_sort(np.array([above_min_contrast_threshold[index_1], above_min_contrast_threshold[index_2]]), bg_color)
         a = scored[0]
         b = above_min_contrast_threshold[index_1]
-        print(scored)
         if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
             above_min_contrast_threshold = np.delete(above_min_contrast_threshold, index_2, 0)
         else:
