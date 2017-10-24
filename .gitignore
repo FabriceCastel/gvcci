@@ -1,0 +1,4 @@
+examples.html
+*.png
+*.jpg
+__pycache__/
