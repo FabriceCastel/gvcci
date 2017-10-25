@@ -252,7 +252,9 @@ for img_file_path in image_paths:
 
     with open(template_file_path, 'r') as template_file:
         template = template_file.read()
-        image_name = ".".join(img_file_path.split('/')[-1].split('.')[:-1])
+
+        # set name constant for the iTerm dynamic profile
+        image_name = "gvcci" # ".".join(img_file_path.split('/')[-1].split('.')[:-1])
         with open(image_name + template_file_extension, 'w') as out_file:
             out_file.write(pystache.render(template, colors))
             print("Output: " + image_name + template_file_extension)
