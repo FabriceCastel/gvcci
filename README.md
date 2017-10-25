@@ -19,11 +19,12 @@ This program has the following dependencies:
 * scikit-learn
 * scikit-image
 * hasel
+* pystache
 
 To setup standard dependencies:
 
 1. Download and install Python 3: https://www.python.org/downloads/ (3.6.3 is the most up to date version as of the writing of this readme)
-2. ```pip3 install cython numpy scikit-learn scikit-image```
+2. ```pip3 install cython pystache numpy scikit-learn scikit-image```
 
 To setup the project:
 
