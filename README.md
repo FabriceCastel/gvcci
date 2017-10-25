@@ -37,9 +37,9 @@ Running the program will print the generated color palette and generate an html 
 
 ## Options
 
-`--background [auto|light|dark|<hex>]`
+`--background [auto|light|dark|<hex>]` - Defaults to `auto`, which can pick either a light or dark background depending on the image. The `light` and `dark` options have it pick either a light or a dark color from the image as the background, and `<hex>` allows you to specify a hex code to use as background color.
 
-`--background` defaults to `auto`, which can pick either a light or dark background depending on the image. the `light` and `dark` options have it pick either a light or a dark color from the image as the background, and `<hex>` allows you to specify a hex code to use as background color.
+`--template [file]` - Defaults to `./templates/iterm.itermcolors`. Specify which template to use when generating the output. For more information regarding templates, refer to the Templates section below.
 
 ## Roadmap/TODO List
 
@@ -52,3 +52,54 @@ Running the program will print the generated color palette and generate an html 
 - [ ] Add commandline param to set the image as wallpaper
 - [ ] Generalize script? (ie. be able to request X light colors, Y dark colors and Z variants on each color)
 - [ ] Add commandline params to specify min/max contrast levels between light and dark colours, min/max saturation values, etc
+
+## Templates
+
+When writing a template, you have access to the following colors:
+
+```
+background
+foreground
+bold
+cursor
+selection
+selected-text
+ansi-black-normal
+ansi-black-bright
+ansi-red-normal
+ansi-red-bright
+ansi-green-normal
+ansi-green-bright
+ansi-yellow-normal
+ansi-yellow-bright
+ansi-blue-normal
+ansi-blue-bright
+ansi-magenta-normal
+ansi-magenta-bright
+ansi-cyan-normal
+ansi-cyan-bright
+ansi-white-normal
+ansi-white-bright
+```
+
+For each color, you have access to the following variants:
+
+```
+<color>-[red|green|blue]-255 (a value for the rgb components in the [0, 255] range)
+<color>-[red|green|blue]-float (a value for the rgb components in the [0, 1] range)
+<color>-hex (the hex code of the color)
+```
+
+Here's the "hello world" of `gvcci` templates:
+
+```
+Background: {{background-hex}}
+Foreground RGB: [{{foreground-red-255}}, {{foreground-green-255}}, {{foreground-blue-255}}]
+```
+
+If you had a pure black background with pure red foreground, this would yield
+
+```
+Background: #000000
+Foreground RGB: [255, 0, 0]
+```
