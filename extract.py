@@ -196,8 +196,6 @@ for img_file_path in image_paths:
         colors_rgb[name + "-green"] = rgb[1] / 255
         colors_rgb[name + "-blue"]   = rgb[2] / 255
 
-    print(colors_rgb)
-
     with open('templates/iterm.itermcolors', 'r') as template_file:
         template = template_file.read()
         with open(img_file_path.split('.')[0] + '.itermcolors', 'w') as out_file:

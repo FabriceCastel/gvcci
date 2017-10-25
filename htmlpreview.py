@@ -31,9 +31,6 @@ def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
 
     bg_rgb = hex2rgb(bg_fg_hex[0])
 
-    print(hex)
-    # hex = hex[2:]
-
     print("===============================================")
     print("ANSI color scheme for " + img_file_path)
     print("Background")
