@@ -41,6 +41,8 @@ Running the program will print the generated color palette and generate an html 
 
 `--template [file]` - Defaults to `./templates/iterm.itermcolors`. Specify which template to use when generating the output. For more information regarding templates, refer to the Templates section below.
 
+*EXPERIMENTAL* macOS iTerm users with a recent version of iTerm can run ```iterm_lazy.sh [img_path]``` for an easy one-step extract palette + generate iTerm profile + update iTerm profile + update wallpaper.
+
 ## Roadmap/TODO List
 
 - [X] Output a foreground color
