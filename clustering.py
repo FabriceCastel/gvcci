@@ -45,7 +45,7 @@ def hsl_to_hhsl(hsl_colors):
 def hh_cluster_centers_to_h_cluster_centers(hh_centers):
     circular_hue_center_radii = np.sqrt(np.multiply(hh_centers[:,0], hh_centers[:,0]) + np.multiply(hh_centers[:,1], hh_centers[:,1]))
     circular_hue_center_radii = np.reshape(circular_hue_center_radii, (-1, 1))
-    norm_circular_hue_centers = hh_centers / circular_hue_center_radii
+    norm_circular_hue_centers = hh_centers / np.clip(circular_hue_center_radii, 0.000000000001, 1)
     norm_circular_hue_centers = np.clip(norm_circular_hue_centers, -1, 1)
     return hcos_hsin_to_h(norm_circular_hue_centers)
 

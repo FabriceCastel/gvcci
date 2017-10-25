@@ -108,7 +108,16 @@ html_contents = ""
 
 # --background [dark|light|auto|<hex>]
 background_color_param_name = "--background"
-background_color_param = "auto"
+background_color_param_default = "auto"
+
+template_param_name = "--template"
+template_param_default = "./templates/iterm.itermcolors"
+
+config = {
+    background_color_param_name: background_color_param_default,
+    template_param_name: template_param_default
+}
+
 image_paths = []
 
 # TODO look into pythonic way of parsing cmdline arguments
@@ -116,8 +125,8 @@ arg_id = 1
 while arg_id < len(sys.argv):
     commandline_param = sys.argv[arg_id]
     if (len(commandline_param) > 2):
-        if (commandline_param == background_color_param_name):
-            background_color_param = sys.argv[arg_id + 1]
+        if (commandline_param[:2] == "--"):
+            config[commandline_param] = sys.argv[arg_id + 1]
             arg_id += 1
         else:
             image_paths.append(commandline_param)
@@ -129,7 +138,9 @@ for img_file_path in image_paths:
     hsl_colors = get_pixels_for_image(img_file_path)
     improved_centers = hhsl_cluster_centers_as_hsl(hsl_colors)
 
-    bg_and_fg_colors = np.array([[0, 0, 0], [0, 0, 0.96]]) # fallback values
+    bg_fg_colors = np.array([[0, 0, 0], [0, 0, 0.96]]) # default fallback values
+    if (config[background_color_param_name] == "light"):
+        bg_fg_colors = np.array([[0, 0, 0.96], [0, 0, 0]]) # light fallback values
 
     precision = 32
     dark_l = 0.2;
@@ -145,17 +156,17 @@ for img_file_path in image_paths:
 
     dark_and_light_colors = np.vstack((dark_colors, light_colors))
 
-    if background_color_param == "auto" and len(dark_and_light_colors) > 0:
+    if config[background_color_param_name] == "auto" and len(dark_and_light_colors) > 0:
         bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
         bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif background_color_param == "dark" and len(dark_colors) > 0:
+    elif config[background_color_param_name] == "dark" and len(dark_colors) > 0:
         bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
         bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif background_color_param == "light" and len(light_colors) > 0:
+    elif config[background_color_param_name] == "light" and len(light_colors) > 0:
         bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
         bg_fg_colors = np.vstack((bg_color, bg_color))
-    else:
-        bg_color = hex2rgb(background_color_param)
+    elif config[background_color_param_name][0] == "#":
+        bg_color = hex2rgb(config[background_color_param_name])
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
         bg_fg_colors = np.vstack((bg_color, bg_color))
 
@@ -192,7 +203,7 @@ for img_file_path in image_paths:
     black_bright = black.copy()
     black_bright[2] += 0.1
 
-    colors = {
+    colors_hsl = {
         "background":          bg_color,
         "foreground":          ansi_colors[0],
         "bold":                ansi_colors[1],
@@ -217,17 +228,32 @@ for img_file_path in image_paths:
         "ansi-white-bright":   ansi_colors[15]
     }
 
-    print_color_scheme(colors)
+    # print_color_scheme(colors)
 
-    colors_rgb = {}
-    for name, hsl in colors.items():
+    colors = {}
+    for name, hsl in colors_hsl.items():
         rgb = hsl2rgb(hsl)
-        colors_rgb[name + "-red"]   = rgb[0] / 255
-        colors_rgb[name + "-green"] = rgb[1] / 255
-        colors_rgb[name + "-blue"]   = rgb[2] / 255
+        hex = hsl2hex(hsl)
 
-    with open('templates/iterm.itermcolors', 'r') as template_file:
+        colors[name + "-red-255"]     = rgb[0]
+        colors[name + "-green-255"]   = rgb[1]
+        colors[name + "-blue-255"]    = rgb[2]
+        colors[name + "-red-float"]   = rgb[0] / 255
+        colors[name + "-green-float"] = rgb[1] / 255
+        colors[name + "-blue-float"]  = rgb[2] / 255
+        colors[name + "-hex"]         = hex
+
+    template_file_path = config[template_param_name]
+    template_file_name = template_file_path.split('/')[-1]
+    template_file_name_parts = template_file_name.split('.')
+    template_file_extension = ""
+    if len(template_file_name_parts) > 1:
+        template_file_extension = "." + "".join(template_file_name_parts[1:])
+
+    with open(template_file_path, 'r') as template_file:
         template = template_file.read()
-        with open(img_file_path.split('.')[0] + '.itermcolors', 'w') as out_file:
-            out_file.write(pystache.render(template, colors_rgb))
+        image_name = ".".join(img_file_path.split('/')[-1].split('.')[:-1])
+        with open(image_name + template_file_extension, 'w') as out_file:
+            out_file.write(pystache.render(template, colors))
+            print("Output: " + image_name + template_file_extension)
 
