@@ -1,8 +1,7 @@
 #!/bin/bash
 
-rm *.plist
 python3 extract.py $1 --template templates/iterm.plist
-cp *.plist ~/Library/Application\ Support/iTerm2/DynamicProfiles/
+cp gvcci.plist ~/Library/Application\ Support/iTerm2/DynamicProfiles/
 
 # set macOS wallpaper
 img_path="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
