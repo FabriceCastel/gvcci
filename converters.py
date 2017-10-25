@@ -18,6 +18,10 @@ def rgblist2hex(rgb_list):
 def hsl2rgb(hsl):
 	return hasel.hsl2rgb(np.array([hsl]).reshape(1, 1, 3)).reshape(1, 3)[0]
 
+def hsl2hex(hsl):
+	rgb = hsl2rgb(hsl)
+	return rgb2hex(rgb[0], rgb[1], rgb[2])
+
 def hsllist2hex(color_list):
     rgb_colors = hasel.hsl2rgb(color_list.reshape(-1, 1, 3)).reshape(-1, 3)
     rgb_colors = np.clip(rgb_colors, 0, 255)

@@ -10,7 +10,7 @@ import hasel
 import pystache
 
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
-from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb
+from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
 from scoring import custom_filter_and_sort_complements
 
@@ -69,6 +69,40 @@ def generate_complementary(colors, delta_l = 0.12):
     combined[1::2] = complements
     return combined
 
+def print_color_scheme(colors):
+    print("===============================================")
+    print("ANSI color scheme for " + img_file_path)
+    print("Background")
+    print(hsl2hex(colors["background"]))
+    
+    print("")
+    print("Foreground")
+    print(hsl2hex(colors["foreground"]))
+    
+    print("")
+    print("Normal")
+    print(hsl2hex(colors["ansi-black-normal"]))
+    print(hsl2hex(colors["ansi-red-normal"]))
+    print(hsl2hex(colors["ansi-green-normal"]))
+    print(hsl2hex(colors["ansi-yellow-normal"]))
+    print(hsl2hex(colors["ansi-blue-normal"]))
+    print(hsl2hex(colors["ansi-magenta-normal"]))
+    print(hsl2hex(colors["ansi-cyan-normal"]))
+    print(hsl2hex(colors["ansi-white-normal"]))
+
+    print("")
+    print("Bright")
+    print(hsl2hex(colors["ansi-black-bright"]))
+    print(hsl2hex(colors["ansi-red-bright"]))
+    print(hsl2hex(colors["ansi-green-bright"]))
+    print(hsl2hex(colors["ansi-yellow-bright"]))
+    print(hsl2hex(colors["ansi-blue-bright"]))
+    print(hsl2hex(colors["ansi-magenta-bright"]))
+    print(hsl2hex(colors["ansi-cyan-bright"]))
+    print(hsl2hex(colors["ansi-white-bright"]))
+
+    print("===============================================")
+
 
 html_contents = ""
 
@@ -91,41 +125,35 @@ while arg_id < len(sys.argv):
 
 for img_file_path in image_paths:
     print("Generating colors for input " + str(img_file_path))
+
     hsl_colors = get_pixels_for_image(img_file_path)
     improved_centers = hhsl_cluster_centers_as_hsl(hsl_colors)
-    centers = hsl_cluster_centers(hsl_colors)
 
-    bg_and_fg_colors = np.array([[0, 0, 0], [0, 0, 1]]) # fallback values
+    bg_and_fg_colors = np.array([[0, 0, 0], [0, 0, 0.96]]) # fallback values
 
-    if background_color_param == "auto":
-        precision = 32
-        dark_l = 0.2;
-        light_l = 0.8;
-        light_l_upper = 0.95;
-        dark_and_light_colors = np.vstack((hsl_colors[hsl_colors[:,2] > light_l], hsl_colors[hsl_colors[:,2] < dark_l]))
-        dark_and_light_colors = dark_and_light_colors[dark_and_light_colors[:,2] < light_l_upper]
-        if (len(dark_and_light_colors) > 0):
-            bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
-            bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif background_color_param == "dark":
-        precision = 32
-        dark_l = 0.2;
-        light_l = 0.8;
-        light_l_upper = 0.95;
-        dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
-        if (len(dark_colors) > 0):
-            bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
-            bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif background_color_param == "light":
-        bg_and_fg_colors = np.array([[0, 0, 1], [0, 0, 0]]) # fallback values
-        precision = 32
-        light_l = 0.8;
-        light_l_upper = 0.95;
-        light_colors = hsl_colors[hsl_colors[:,2] > light_l]
-        light_colors = light_colors[light_colors[:,2] < light_l_upper]
-        if (len(light_colors) > 0):
-            bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
-            bg_fg_colors = np.vstack((bg_color, bg_color))
+    precision = 32
+    dark_l = 0.2;
+    light_l = 0.8;
+    light_l_upper = 0.95;
+    light_s_upper = 0.4;
+
+    light_colors = hsl_colors[hsl_colors[:,2] > light_l]
+    light_colors = light_colors[light_colors[:,2] < light_l_upper]
+    light_colors = light_colors[light_colors[:,1] < light_s_upper]
+
+    dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
+
+    dark_and_light_colors = np.vstack((dark_colors, light_colors))
+
+    if background_color_param == "auto" and len(dark_and_light_colors) > 0:
+        bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+    elif background_color_param == "dark" and len(dark_colors) > 0:
+        bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
+    elif background_color_param == "light" and len(light_colors) > 0:
+        bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
+        bg_fg_colors = np.vstack((bg_color, bg_color))
     else:
         bg_color = hex2rgb(background_color_param)
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
@@ -137,7 +165,9 @@ for img_file_path in image_paths:
 
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
-    html_contents += get_html_contents(centers, improved_centers, bg_fg_colors, img_file_path)
+    ansi_colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
+
+    html_contents += get_html_contents(ansi_colors, bg_fg_colors, img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
     html += html_contents
@@ -147,8 +177,6 @@ for img_file_path in image_paths:
     result_file = open("examples.html", "w")
     result_file.write(html)
     result_file.close()
-
-    colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
 
     # black_default_lightness = 0.1
 
@@ -166,28 +194,30 @@ for img_file_path in image_paths:
 
     colors = {
         "background":          bg_color,
-        "foreground":          colors[0],
-        "bold":                colors[1],
-        "cursor":              colors[2],
-        "selection":           colors[0],
+        "foreground":          ansi_colors[0],
+        "bold":                ansi_colors[1],
+        "cursor":              ansi_colors[2],
+        "selection":           ansi_colors[0],
         "selected-text":       bg_color,
         "ansi-black-normal":   black,
         "ansi-black-bright":   black_bright,
-        "ansi-red-normal":     colors[2],
-        "ansi-red-bright":     colors[3],
-        "ansi-green-normal":   colors[4],
-        "ansi-green-bright":   colors[5],
-        "ansi-yellow-normal":  colors[6],
-        "ansi-yellow-bright":  colors[7],
-        "ansi-blue-normal":    colors[8],
-        "ansi-blue-bright":    colors[9],
-        "ansi-magenta-normal": colors[10],
-        "ansi-magenta-bright": colors[11],
-        "ansi-cyan-normal":    colors[12],
-        "ansi-cyan-bright":    colors[13],
-        "ansi-white-normal":   colors[14],
-        "ansi-white-bright":   colors[15]
+        "ansi-red-normal":     ansi_colors[2],
+        "ansi-red-bright":     ansi_colors[3],
+        "ansi-green-normal":   ansi_colors[4],
+        "ansi-green-bright":   ansi_colors[5],
+        "ansi-yellow-normal":  ansi_colors[6],
+        "ansi-yellow-bright":  ansi_colors[7],
+        "ansi-blue-normal":    ansi_colors[8],
+        "ansi-blue-bright":    ansi_colors[9],
+        "ansi-magenta-normal": ansi_colors[10],
+        "ansi-magenta-bright": ansi_colors[11],
+        "ansi-cyan-normal":    ansi_colors[12],
+        "ansi-cyan-bright":    ansi_colors[13],
+        "ansi-white-normal":   ansi_colors[14],
+        "ansi-white-bright":   ansi_colors[15]
     }
+
+    print_color_scheme(colors)
 
     colors_rgb = {}
     for name, hsl in colors.items():

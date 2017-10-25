@@ -1,5 +1,5 @@
 from scoring import custom_filter_and_sort_complements
-from converters import hsllist2hex, hex2rgb
+from converters import hsllist2hex, hex2rgb, hsl2rgb
 
 import numpy as np
 
@@ -25,28 +25,9 @@ def html_color_list(title, colors, col_width = 300):
 def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
-def get_preview_image(img_file_path, ansi_colors, bg_and_fg_colors):
+def get_preview_image(img_file_path, ansi_colors, bg_color):
     hex = hsllist2hex(ansi_colors)
-    bg_fg_hex = hsllist2hex(bg_and_fg_colors)
-
-    bg_rgb = hex2rgb(bg_fg_hex[0])
-
-    print("===============================================")
-    print("ANSI color scheme for " + img_file_path)
-    print("Background")
-    print(bg_fg_hex[0])
-    print("")
-    # print("Foreground")
-    # print(bg_and_fg_colors[1])
-    # print("")
-    print("Normal")
-    for j in range(len(hex) // 2):
-        print(hex[2*j])
-    print("")
-    print("Bright")
-    for j in range(len(hex) // 2):
-        print(hex[2*j + 1])
-    print("===============================================")
+    bg_rgb = hsl2rgb(bg_color)
 
     black =    0
     red =      2
@@ -133,9 +114,8 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
 
-def get_html_contents(center, improved_centers, bg_and_fg_colors, img_file_path):
-    colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_and_fg_colors[0])
-    html = get_preview_image(img_file_path, colors, bg_color)
+def get_html_contents(ansi_colors, bg_fg_colors, img_file_path):
+    html = get_preview_image(img_file_path, ansi_colors, bg_fg_colors[0])
     html += "<div style='display: flex; overflow: scroll;'>"
     # html += html_color_list("3D HSL", sort_by_h(centers))
     # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
