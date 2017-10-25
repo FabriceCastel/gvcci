@@ -43,12 +43,12 @@ Running the program will print the generated color palette and generate an html 
 
 ## Roadmap/TODO List
 
-- [ ] Output a foreground color
-- [ ] Assign adequately dark color to the ANSI 'Black' color value
+- [X] Output a foreground color
+- [X] Assign adequately dark color to the ANSI 'Black' color value
 - [ ] Improve background color selection for light themes
 - [ ] Improve syntax colors for light themes
 - [ ] Refactor the codebase and modularize it where appropriate
-- [ ] Add the ability to use output templates
+- [X] Add the ability to use output templates
 - [ ] Add commandline param to set the image as wallpaper
 - [ ] Generalize script? (ie. be able to request X light colors, Y dark colors and Z variants on each color)
 - [ ] Add commandline params to specify min/max contrast levels between light and dark colours, min/max saturation values, etc
