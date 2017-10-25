@@ -7,9 +7,12 @@ from skimage import io
 
 import hasel
 
+import pystache
+
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
-from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex
+from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb
 from htmlpreview import get_html_contents
+from scoring import custom_filter_and_sort_complements
 
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
@@ -128,7 +131,6 @@ for img_file_path in image_paths:
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
         bg_fg_colors = np.vstack((bg_color, bg_color))
 
-
     # TODO the gb colour detection sucks for light colors
     # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
     # TODO bg color breaks for the isaac example because the black bg is a flat #000000 color that's filtered out
@@ -145,3 +147,59 @@ for img_file_path in image_paths:
     result_file = open("examples.html", "w")
     result_file.write(html)
     result_file.close()
+
+    colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
+
+    # black_default_lightness = 0.1
+
+    black = bg_color.copy()
+
+    if (bg_color[2] < 0.1):
+        black[2] += 0.1
+    elif (bg_color[2] < 0.5):
+        black[2] -= 0.1
+    else:
+        black[2] = 0.2
+
+    black_bright = black.copy()
+    black_bright[2] += 0.1
+
+    colors = {
+        "background":          bg_color,
+        "foreground":          colors[0],
+        "bold":                colors[1],
+        "cursor":              colors[2],
+        "selection":           colors[0],
+        "selected-text":       bg_color,
+        "ansi-black-normal":   black,
+        "ansi-black-bright":   black_bright,
+        "ansi-red-normal":     colors[2],
+        "ansi-red-bright":     colors[3],
+        "ansi-green-normal":   colors[4],
+        "ansi-green-bright":   colors[5],
+        "ansi-yellow-normal":  colors[6],
+        "ansi-yellow-bright":  colors[7],
+        "ansi-blue-normal":    colors[8],
+        "ansi-blue-bright":    colors[9],
+        "ansi-magenta-normal": colors[10],
+        "ansi-magenta-bright": colors[11],
+        "ansi-cyan-normal":    colors[12],
+        "ansi-cyan-bright":    colors[13],
+        "ansi-white-normal":   colors[14],
+        "ansi-white-bright":   colors[15]
+    }
+
+    colors_rgb = {}
+    for name, hsl in colors.items():
+        rgb = hsl2rgb(hsl)
+        colors_rgb[name + "-red"]   = rgb[0] / 255
+        colors_rgb[name + "-green"] = rgb[1] / 255
+        colors_rgb[name + "-blue"]   = rgb[2] / 255
+
+    print(colors_rgb)
+
+    with open('templates/iterm.itermcolors', 'r') as template_file:
+        template = template_file.read()
+        with open(img_file_path.split('.')[0] + '.itermcolors', 'w') as out_file:
+            out_file.write(pystache.render(template, colors_rgb))
+

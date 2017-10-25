@@ -137,7 +137,6 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
     return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
 
 def get_html_contents(center, improved_centers, bg_and_fg_colors, img_file_path):
-    print("generating html preview...")
     colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_and_fg_colors[0])
     html = get_preview_image(img_file_path, colors, bg_color)
     html += "<div style='display: flex; overflow: scroll;'>"
