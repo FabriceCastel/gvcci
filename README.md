@@ -1,4 +1,4 @@
-# GVCCI
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/resources/gvcci-title.png "gvcci logo")
 
 ## About
 
