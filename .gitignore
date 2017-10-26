@@ -1,4 +1,6 @@
 examples.html
-./*.png
-./*.jpg
+/*.png
+/*.jpg
+/gvcci.plist
+/gvcci.txt
 __pycache__/
