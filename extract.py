@@ -103,6 +103,10 @@ def print_color_scheme(colors):
 
     print("===============================================")
 
+with open('resources/gvcci-title-ascii.txt', 'r') as logo:
+    print(logo.read())
+
+
 
 html_contents = ""
 
