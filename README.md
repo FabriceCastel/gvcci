@@ -10,6 +10,12 @@ For some examples, check out: http://fabricecastel.github.io/colors/examples.htm
 
 The project is still very much a work in progress, with background color logic in the works so that you can choose between light, dark & custom background colors. Feel free to join in the discussion via the github issues page, or the thread on /r/unixporn [here](https://www.reddit.com/r/unixporn/comments/77iagc/writing_a_new_tool_to_extract_terminal_colour/)
 
+## Screenshots
+
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_01.png "sample 1")
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_02.png "sample 2")
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_03.png "sample 3")
+
 ## Setup
 
 This program has the following dependencies:
