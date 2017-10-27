@@ -12,7 +12,8 @@ import pystache
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
-from scoring import custom_filter_and_sort_complements
+from scoring import custom_filter_and_sort_complements, pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency
+from colorgenerator import generate_complementary
 
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
@@ -34,79 +35,38 @@ def get_pixels_for_image(img_file_path):
     print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
     return hsl_colors
 
-def mode_rows(a):
-    a = np.ascontiguousarray(a)
-    void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
-    _,ids, count = np.unique(a.view(void_dt).ravel(), \
-                                return_index=1,return_counts=1)
-    largest_count_id = ids[count.argmax()]
-    return a[largest_count_id]
+
     # print(count)
     # print(a)
     # most_frequent_rows = a[np.argsort(count)]
     # return most_frequent_rows
 
-def generate_complementary(colors, delta_l = 0.12):
-    base = np.copy(colors)
-    num_colors = base.shape[0]
-    # avg_s = np.sum(colors[:,1]) / num_colors
-    avg_l = np.sum(colors[:,2]) / num_colors
-    complements = np.zeros(base.shape)
-    for i in range(num_colors):
-        complements[i] = base[i]
-        if (colors[i][2] < avg_l):
-            complements[i][2] += delta_l
-            complements[i][1] += complements[i][2] ** 5
-        else:
-            base[i][2] -= delta_l
-            base[i][1] -= complements[i][2] ** 5 # when the light value is high, put a HARD dampener on the saturation of the darker complement
+# def generate_complementary(colors, delta_l = 0.12):
+#     base = np.copy(colors)
+#     num_colors = base.shape[0]
+#     # avg_s = np.sum(colors[:,1]) / num_colors
+#     avg_l = np.sum(colors[:,2]) / num_colors
+#     complements = np.zeros(base.shape)
+#     for i in range(num_colors):
+#         complements[i] = base[i]
+#         if (colors[i][2] < avg_l):
+#             complements[i][2] += delta_l
+#             complements[i][1] += complements[i][2] ** 5
+#         else:
+#             base[i][2] -= delta_l
+#             base[i][1] -= complements[i][2] ** 5 # when the light value is high, put a HARD dampener on the saturation of the darker complement
 
-    complements = np.clip(complements, 0, 1)
-    base = np.clip(base, 0, 1)
+#     complements = np.clip(complements, 0, 1)
+#     base = np.clip(base, 0, 1)
 
-    combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
-    combined[0::2] = base
-    combined[1::2] = complements
-    return combined
+#     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
+#     combined[0::2] = base
+#     combined[1::2] = complements
+#     return combined
 
-def print_color_scheme(colors):
-    print("===============================================")
-    print("ANSI color scheme for " + img_file_path)
-    print("Background")
-    print(hsl2hex(colors["background"]))
-    
-    print("")
-    print("Foreground")
-    print(hsl2hex(colors["foreground"]))
-    
-    print("")
-    print("Normal")
-    print(hsl2hex(colors["ansi-black-normal"]))
-    print(hsl2hex(colors["ansi-red-normal"]))
-    print(hsl2hex(colors["ansi-green-normal"]))
-    print(hsl2hex(colors["ansi-yellow-normal"]))
-    print(hsl2hex(colors["ansi-blue-normal"]))
-    print(hsl2hex(colors["ansi-magenta-normal"]))
-    print(hsl2hex(colors["ansi-cyan-normal"]))
-    print(hsl2hex(colors["ansi-white-normal"]))
-
-    print("")
-    print("Bright")
-    print(hsl2hex(colors["ansi-black-bright"]))
-    print(hsl2hex(colors["ansi-red-bright"]))
-    print(hsl2hex(colors["ansi-green-bright"]))
-    print(hsl2hex(colors["ansi-yellow-bright"]))
-    print(hsl2hex(colors["ansi-blue-bright"]))
-    print(hsl2hex(colors["ansi-magenta-bright"]))
-    print(hsl2hex(colors["ansi-cyan-bright"]))
-    print(hsl2hex(colors["ansi-white-bright"]))
-
-    print("===============================================")
 
 with open('resources/gvcci-title-ascii.txt', 'r') as logo:
     print(logo.read())
-
-
 
 html_contents = ""
 
@@ -142,37 +102,32 @@ for img_file_path in image_paths:
     hsl_colors = get_pixels_for_image(img_file_path)
     improved_centers = hhsl_cluster_centers_as_hsl(hsl_colors)
 
-    bg_fg_colors = np.array([[0, 0, 0], [0, 0, 0.96]]) # default fallback values
-    if (config[background_color_param_name] == "light"):
-        bg_fg_colors = np.array([[0, 0, 0.96], [0, 0, 0]]) # light fallback values
+    dominant_dark_and_light_colors = find_dominant_by_frequency(hsl_colors)
 
-    precision = 32
-    dark_l = 0.2;
-    light_l = 0.8;
-    light_l_upper = 0.95;
-    light_s_upper = 0.4;
+    bg_color = dominant_dark_and_light_colors[0]
+    fg_color = dominant_dark_and_light_colors[1]
 
-    light_colors = hsl_colors[hsl_colors[:,2] > light_l]
-    light_colors = light_colors[light_colors[:,2] < light_l_upper]
-    light_colors = light_colors[light_colors[:,1] < light_s_upper]
+    dominant_dark = dominant_dark_and_light_colors[0]
+    dominant_light = dominant_dark_and_light_colors[1]
 
-    dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
+    if (dominant_dark[0][2] > dominant_light[0][2]):
+        tmp = dominant_light
+        dominant_light = dominant_dark
+        dominant_dark = tmp
 
-    dark_and_light_colors = np.vstack((dark_colors, light_colors))
-
-    if config[background_color_param_name] == "auto" and len(dark_and_light_colors) > 0:
-        bg_color = mode_rows((dark_and_light_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif config[background_color_param_name] == "dark" and len(dark_colors) > 0:
-        bg_color = mode_rows((dark_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
-    elif config[background_color_param_name] == "light" and len(light_colors) > 0:
-        bg_color = mode_rows((light_colors * precision).astype(int)).reshape(1, 3) / precision
-        bg_fg_colors = np.vstack((bg_color, bg_color))
+    if config[background_color_param_name] == "dark":
+        bg_color = dominant_dark
+        fg_color = dominant_light
+    elif config[background_color_param_name] == "light":
+        bg_color = dominant_light
+        fg_color = dominant_dark
     elif config[background_color_param_name][0] == "#":
         bg_color = hex2rgb(config[background_color_param_name])
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
-        bg_fg_colors = np.vstack((bg_color, bg_color))
+        if (bg_color[2] < 0.5):
+            fg_color = dominant_light
+        else:
+            fg_color = dominant_dark
 
     # TODO the gb colour detection sucks for light colors
     # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
@@ -180,9 +135,13 @@ for img_file_path in image_paths:
 
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
-    ansi_colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
+    ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light)
+    ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light)
+    ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
+    ansi_colors = ansi_colors_normal_and_bright # shorthand
+    # ansi_colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
 
-    html_contents += get_html_contents(ansi_colors, bg_fg_colors, img_file_path)
+    html_contents += get_html_contents(ansi_colors, np.vstack((bg_color, fg_color)), img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
     html += html_contents
@@ -193,23 +152,21 @@ for img_file_path in image_paths:
     result_file.write(html)
     result_file.close()
 
-    # black_default_lightness = 0.1
-
     black = bg_color.copy()
 
-    if (bg_color[2] < 0.1):
-        black[2] += 0.1
-    elif (bg_color[2] < 0.5):
-        black[2] -= 0.1
+    if (bg_color[0][2] < 0.1):
+        black[0][2] += 0.1
+    elif (bg_color[0][2] < 0.5):
+        black[0][2] -= 0.1
     else:
-        black[2] = 0.2
+        black[0][2] = 0.2
 
     black_bright = black.copy()
-    black_bright[2] += 0.1
+    black_bright[0][2] += 0.1
 
     colors_hsl = {
         "background":          bg_color,
-        "foreground":          ansi_colors[0],
+        "foreground":          fg_color,
         "bold":                ansi_colors[1],
         "cursor":              ansi_colors[2],
         "selection":           ansi_colors[0],
@@ -231,8 +188,6 @@ for img_file_path in image_paths:
         "ansi-white-normal":   ansi_colors[14],
         "ansi-white-bright":   ansi_colors[15]
     }
-
-    # print_color_scheme(colors)
 
     colors = {}
     for name, hsl in colors_hsl.items():
