@@ -167,7 +167,7 @@ for img_file_path in image_paths:
     colors_hsl = {
         "background":          bg_color,
         "foreground":          fg_color,
-        "bold":                ansi_colors[1],
+        "bold":                fg_color, # TODO!
         "cursor":              ansi_colors[2],
         "selection":           ansi_colors[0],
         "selected-text":       bg_color,

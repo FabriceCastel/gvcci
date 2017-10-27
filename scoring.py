@@ -202,7 +202,7 @@ def clip_between_boundaries(hsl_colors, dark_boundary = black, light_boundary = 
 
 def find_nearest_pair(colors):
     closest_pair = [colors[0], colors[1]]
-    closest_dist = dist(colors[0], colors[1])
+    closest_dist = distance_between_colors(colors[0], colors[1])
     index_1 = 0
     index_2 = 1 # this is so stupid...
     
@@ -228,10 +228,10 @@ def find_nearest_pair(colors):
 
     return (index_1, index_2)
 
-def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.4):
+def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.5):
     def contrast_between_boundaries(colors):
         dark_contrast = contrast_between_all(colors, dark_boundary)
-        light_contrast = contrast_between_all(colors, light_boundary)
+        light_contrast = contrast_between_all(colors, light_boundary + 0.6)
         return np.minimum(dark_contrast, light_contrast)
 
     def sort_by_contrast(colors):
@@ -241,7 +241,10 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
         return colors[contrast_between_boundaries(colors) >= contrast_threshold]
 
     within_bounds = filter_within_bounds(hsl_colors, min_contrast)
-    print("Found " + str(len(within_bounds)) + " qualified color candidates")
+    print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")
+    print(dark_boundary)
+    print(light_boundary)
+    print(within_bounds)
 
     if len(within_bounds) <= n_colors:
         within_bounds = sort_by_contrast(hsl_colors)[:n_colors]
@@ -250,7 +253,7 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
         pair = find_nearest_pair(within_bounds)
         scored = sort_by_contrast(np.array([within_bounds[pair[0]], within_bounds[pair[1]]]))
         a = scored[0]
-        b = within_bounds[index_1]
+        b = within_bounds[pair[0]]
         if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
             within_bounds = np.delete(within_bounds, pair[1], 0)
         else:
