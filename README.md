@@ -14,8 +14,9 @@ The project is still very much a work in progress, with background color logic i
 
 ![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_01.png "sample 1")
 ![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_02.png "sample 2")
-![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_03.png "sample 3")
-![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_04.png "sample 4")
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/light_01.png "sample 3")
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_03.png "sample 4")
+![alt text](https://github.com/FabriceCastel/gvcci/blob/master/samples/dark_04.png "sample 5")
 
 ## Setup
 
