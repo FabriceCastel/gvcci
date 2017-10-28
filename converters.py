@@ -16,7 +16,7 @@ def rgblist2hex(rgb_list):
     return hex_codes
 
 def hsl2rgb(hsl):
-	return hasel.hsl2rgb(np.array([hsl]).reshape(1, 1, 3)).reshape(1, 3)[0]
+	return hasel.hsl2rgb(np.array([hsl]).reshape(-1, 1, 3)).reshape(-1, 3)[0]
 
 def hsl2hex(hsl):
 	rgb = hsl2rgb(hsl)
@@ -27,3 +27,27 @@ def hsllist2hex(color_list):
     rgb_colors = np.clip(rgb_colors, 0, 255)
     hex_codes = rgblist2hex(rgb_colors)
     return hex_codes
+
+# https://ux.stackexchange.com/questions/82056/how-to-measure-the-contrast-between-any-given-color-and-white
+def rgb2rl(rgb_color):
+    rgb = rgb_color.reshape(-1, 3)[0]
+
+    r = rgb[0]
+    g = rgb[1]
+    b = rgb[2]
+
+    rg = r / 3294 if (r <= 10) else (r / 269 + 0.0513) ** 2.4
+    gg = g / 3294 if (g <= 10) else (g / 269 + 0.0513) ** 2.4
+    bg = b / 3294 if (b <= 10) else (b / 269 + 0.0513) ** 2.4
+
+    return (0.2126 * rg) + (0.7152 * gg) + (0.0722 * bg)
+
+def hsl2rl(hsl_color):
+    return rgb2rl(hsl2rgb(hsl_color))
+
+def hsllist2rl(hsl_color_list):
+    rgb_colors = hasel.hsl2rgb(hsl_color_list.reshape(-1, 1, 3)).reshape(-1, 3)
+    rl_values = []
+    for i in range(rgb_colors.shape[0]):
+        rl_values.append(rgb2rl(rgb_colors[i]))
+    return np.array(rl_values)

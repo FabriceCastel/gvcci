@@ -10,10 +10,10 @@ def generate_complementary(colors, delta_l = 0.12):
         complements[i] = base[i]
         if (colors[i][2] < avg_l):
             complements[i][2] += delta_l
-            complements[i][1] += complements[i][2] ** 5
+            complements[i][1] += complements[i][2] ** 8
         else:
             base[i][2] -= delta_l
-            base[i][1] -= complements[i][2] ** 5 # when the light value is high, put a HARD dampener on the saturation of the darker complement
+            base[i][1] -= complements[i][2] ** 8 # when the light value is high, put a HARD dampener on the saturation of the darker complement
 
     complements = np.clip(complements, 0, 1)
     base = np.clip(base, 0, 1)
