@@ -135,7 +135,16 @@ for img_file_path in image_paths:
 
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
-    ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light)
+    # dark theme settings
+    min_dark_contrast = 0.4
+    min_light_contrast = 0.1
+
+    # light theme settings
+    if (bg_color[0][2] > 0.5):
+        min_dark_contrast = 0.1
+        min_light_contrast = 0.4
+
+    ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light)
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
     ansi_colors = ansi_colors_normal_and_bright # shorthand

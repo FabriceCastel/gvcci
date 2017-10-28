@@ -235,12 +235,18 @@ def find_nearest_pair(colors):
 
     return (index_1, index_2)
 
-def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.4):
+def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, dark_min_contrast = 0.4, light_min_contrast = 0.2):
+    max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
+
     def contrast_between_boundaries(colors):
         dark_contrast = contrast_between_all(colors, dark_boundary)
+        light_contrast = contrast_between_all(colors, light_boundary)
+        
+        if (dark_min_contrast > light_min_contrast):
+            light_contrast += dark_min_contrast - light_min_contrast
+        elif (light_min_contrast > dark_min_contrast):
+            dark_contrast += light_min_contrast - dark_min_contrast
 
-        # TODO work out a way to add min contrast between each boundary (not all things need to contrast equally!)
-        light_contrast = contrast_between_all(colors, light_boundary) + 0.3 # artificially boost brights
         return np.minimum(dark_contrast, light_contrast)
 
     def sort_by_contrast(colors):
@@ -249,7 +255,7 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
     def filter_within_bounds(colors, contrast_threshold):
         return colors[contrast_between_boundaries(colors) >= contrast_threshold]
 
-    within_bounds = filter_within_bounds(hsl_colors, min_contrast)
+    within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
     print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")
     print(dark_boundary)
     print(light_boundary)
