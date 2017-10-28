@@ -238,7 +238,9 @@ def find_nearest_pair(colors):
 def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.4):
     def contrast_between_boundaries(colors):
         dark_contrast = contrast_between_all(colors, dark_boundary)
-        light_contrast = contrast_between_all(colors, light_boundary) + 0.2 # artificially boost brights
+
+        # TODO work out a way to add min contrast between each boundary (not all things need to contrast equally!)
+        light_contrast = contrast_between_all(colors, light_boundary) + 0.3 # artificially boost brights
         return np.minimum(dark_contrast, light_contrast)
 
     def sort_by_contrast(colors):
