@@ -1,6 +1,7 @@
 import numpy as np
 
 from colorgenerator import generate_complementary
+from converters import hsllist2rl, hsl2rl
 
 # TODO move out of here
 n_colors = 16
@@ -27,10 +28,16 @@ def trim_colors(colors, property, keep):
 # https://webaim.org/resources/contrastchecker/
 # TODO !!!
 def contrast_between(a, b):
-    return np.abs(a[2] - b[2])
+    rl_a = hsl2rl(a)
+    rl_b = hsl2rl(b)
+    rl_max = max(rl_a, rl_b)
+    return np.abs((rl_a - rl_b) / rl_max)
 
 def contrast_between_all(a, b):
-    return np.abs(a.reshape(-1, 3)[:,2] - b.reshape(-1, 3)[:,2])
+    rl_a = hsllist2rl(a)
+    rl_b = np.array(hsl2rl(b))
+    rl_max = np.max(rl_a, rl_b)
+    return np.abs((rl_a - rl_b) / rl_max)
 
 def inv_custom_sort(colors):
     pow_s = 1
@@ -228,10 +235,10 @@ def find_nearest_pair(colors):
 
     return (index_1, index_2)
 
-def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.5):
+def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.4):
     def contrast_between_boundaries(colors):
         dark_contrast = contrast_between_all(colors, dark_boundary)
-        light_contrast = contrast_between_all(colors, light_boundary + 0.6)
+        light_contrast = contrast_between_all(colors, light_boundary) + 0.2 # artificially boost brights
         return np.minimum(dark_contrast, light_contrast)
 
     def sort_by_contrast(colors):
