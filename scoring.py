@@ -190,22 +190,39 @@ def mode_rows(a):
     largest_count_id = ids[count.argmax()]
     return a[largest_count_id], np.max(count)
 
-def clip_between_boundaries(hsl_colors, dark_boundary = black, light_boundary = white, min_contrast = 0.4):
-    fixed_colors = np.array([]).reshape(0, 3)
-    for color in hsl_colors:
-        dark_delta = np.abs(color[2] - dark_boundary[0][2])
-        light_delta = np.abs(light_boundary[0][2] - color[2])
 
-        fixed_color = color.copy()
-        
-        if dark_delta < min_contrast:
-            fixed_color[2] += dark_delta
-        elif light_delta < min_contrast:
-            fixed_color[2] -= light_delta
+def contrast_between_boundaries(colors, dark_boundary, light_boundary, min_dark_contrast, min_light_contrast):
+    dark_contrast = contrast_between_all(colors, dark_boundary)
+    light_contrast = contrast_between_all(colors, light_boundary)
+    
+    if (min_dark_contrast > min_light_contrast):
+        light_contrast += min_dark_contrast - min_light_contrast
+    elif (min_light_contrast > min_dark_contrast):
+        dark_contrast += min_light_contrast - min_dark_contrast
 
-        fixed_colors = np.vstack((fixed_colors, fixed_color))
+    return np.minimum(dark_contrast, light_contrast)
 
-    return fixed_colors
+def clip_between_boundaries(hsl_colors, dark_boundary, light_boundary, min_dark_contrast, min_light_contrast):
+    dark_contrast = contrast_between_all(hsl_colors, dark_boundary)
+    light_contrast = contrast_between_all(hsl_colors, light_boundary)
+
+    # try and guess the "middle" lightness value between the bounds, accounting for the min contrasts
+    # middle_l_value = (dark_boundary[0][2] + min_dark_contrast + light_boundary[0][2] - min_light_contrast) / 2
+
+    increment = 0.02
+
+    for i in range(len(hsl_colors)):
+        color = hsl_colors[i]
+
+        while (dark_contrast[i] < min_dark_contrast):
+            hsl_colors[i][2] += increment
+            dark_contrast = contrast_between_all(hsl_colors, dark_boundary)
+
+        while (light_contrast[i] < min_light_contrast):
+            hsl_colors[i][2] -= increment
+            light_contrast = contrast_between_all(hsl_colors, light_boundary)
+
+    return hsl_colors
 
 def find_nearest_pair(colors):
     closest_pair = [colors[0], colors[1]]
@@ -238,22 +255,14 @@ def find_nearest_pair(colors):
 def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, dark_min_contrast = 0.4, light_min_contrast = 0.2):
     max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
 
-    def contrast_between_boundaries(colors):
-        dark_contrast = contrast_between_all(colors, dark_boundary)
-        light_contrast = contrast_between_all(colors, light_boundary)
-        
-        if (dark_min_contrast > light_min_contrast):
-            light_contrast += dark_min_contrast - light_min_contrast
-        elif (light_min_contrast > dark_min_contrast):
-            dark_contrast += light_min_contrast - dark_min_contrast
-
-        return np.minimum(dark_contrast, light_contrast)
+    def boundary_contrast(colors):
+        return contrast_between_boundaries(colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast)
 
     def sort_by_contrast(colors):
-        return colors[np.argsort(-1 * contrast_between_boundaries(colors))]
+        return colors[np.argsort(-1 * boundary_contrast(colors))]
 
     def filter_within_bounds(colors, contrast_threshold):
-        return colors[contrast_between_boundaries(colors) >= contrast_threshold]
+        return colors[boundary_contrast(colors) >= contrast_threshold]
 
     within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
     # print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")

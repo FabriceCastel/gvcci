@@ -148,7 +148,7 @@ for img_file_path in image_paths:
         print("setting contrast levels for dark theme")
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
-    ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light)
+    ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
     ansi_colors = ansi_colors_normal_and_bright # shorthand
     # ansi_colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
