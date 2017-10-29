@@ -121,7 +121,7 @@ def get_html_contents(ansi_colors, bg_fg_colors, img_file_path):
     # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
     # html += html_color_list("4D HSL", sort_by_h(improved_centers))
     # html += html_color_list("Filtered 4D HSL", filter_by_custom(improved_centers))
-    # html += html_color_list("Filtered 4D HSL Comp", colors)
+    html += html_color_list("List", ansi_colors)
     html += "</div>"
     
     return html

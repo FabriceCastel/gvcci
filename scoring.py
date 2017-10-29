@@ -256,10 +256,10 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
         return colors[contrast_between_boundaries(colors) >= contrast_threshold]
 
     within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
-    print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")
-    print(dark_boundary)
-    print(light_boundary)
-    print(within_bounds)
+    # print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")
+    # print(dark_boundary)
+    # print(light_boundary)
+    # print(within_bounds)
 
     if len(within_bounds) <= n_colors:
         within_bounds = sort_by_contrast(hsl_colors)[:n_colors]

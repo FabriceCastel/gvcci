@@ -141,8 +141,11 @@ for img_file_path in image_paths:
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
+        print("Setting contrast levels for light theme")
         min_dark_contrast = 0.1
         min_light_contrast = 0.4
+    else:
+        print("setting contrast levels for dark theme")
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light)
@@ -217,6 +220,10 @@ for img_file_path in image_paths:
     template_file_extension = ""
     if len(template_file_name_parts) > 1:
         template_file_extension = "." + "".join(template_file_name_parts[1:])
+
+    print("Terminal Colors:")
+    with open('templates/columns-with-headers.txt', 'r') as print_template:
+        print(pystache.render(print_template.read(), colors))
 
     with open(template_file_path, 'r') as template_file:
         template = template_file.read()
