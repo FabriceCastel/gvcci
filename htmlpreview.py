@@ -89,7 +89,7 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     for group in color_groups:
         for word in group[1]:
-            sample = sample.replace(word, wrap_in_span(word, hex[group[0] + 1]))
+            sample = sample.replace(word, wrap_in_span(word, hex[group[0]]))
 
     lines = sample.split('\n')
     vim = ''
