@@ -143,7 +143,7 @@ for img_file_path in image_paths:
     if (bg_color[0][2] > 0.5):
         print("Setting contrast levels for light theme")
         min_dark_contrast = 0.1
-        min_light_contrast = 0.4
+        min_light_contrast = 0.45
     else:
         print("setting contrast levels for dark theme")
 
@@ -221,9 +221,10 @@ for img_file_path in image_paths:
     if len(template_file_name_parts) > 1:
         template_file_extension = "." + "".join(template_file_name_parts[1:])
 
-    print("Terminal Colors:")
+    print("=========== Terminal Colors ===========")
     with open('templates/columns-with-headers.txt', 'r') as print_template:
         print(pystache.render(print_template.read(), colors))
+    print("=======================================")
 
     with open(template_file_path, 'r') as template_file:
         template = template_file.read()

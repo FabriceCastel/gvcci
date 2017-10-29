@@ -209,7 +209,7 @@ def clip_between_boundaries(hsl_colors, dark_boundary, light_boundary, min_dark_
     # try and guess the "middle" lightness value between the bounds, accounting for the min contrasts
     # middle_l_value = (dark_boundary[0][2] + min_dark_contrast + light_boundary[0][2] - min_light_contrast) / 2
 
-    increment = 0.02
+    increment = 0.01
 
     for i in range(len(hsl_colors)):
         color = hsl_colors[i]
