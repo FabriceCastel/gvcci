@@ -35,8 +35,8 @@ def contrast_between(a, b):
 
 def contrast_between_all(a, b):
     rl_a = hsllist2rl(a)
-    rl_b = np.array(hsl2rl(b))
-    rl_max = np.max(rl_a, rl_b)
+    rl_b = hsl2rl(b)
+    rl_max = np.maximum(rl_a, rl_b)
     return np.abs((rl_a - rl_b) / rl_max)
 
 def inv_custom_sort(colors):
