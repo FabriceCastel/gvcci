@@ -107,7 +107,7 @@ for img_file_path in image_paths:
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
     # dark theme settings
-    min_dark_contrast = 0.4
+    min_dark_contrast = 0.75
     min_light_contrast = 0.1
 
     # light theme settings
