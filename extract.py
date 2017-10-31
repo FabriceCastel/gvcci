@@ -20,7 +20,7 @@ v_threshold = 0.05 # ignore colors darker than this
 
 
 def get_pixels_for_image(img_file_path):
-    print("reading image...")
+    print("reading image \"" + img_file_path + "\"")
     img_rgb = io.imread(img_file_path)
 
     print("converting color space...")
@@ -34,35 +34,6 @@ def get_pixels_for_image(img_file_path):
 
     print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
     return hsl_colors
-
-
-    # print(count)
-    # print(a)
-    # most_frequent_rows = a[np.argsort(count)]
-    # return most_frequent_rows
-
-# def generate_complementary(colors, delta_l = 0.12):
-#     base = np.copy(colors)
-#     num_colors = base.shape[0]
-#     # avg_s = np.sum(colors[:,1]) / num_colors
-#     avg_l = np.sum(colors[:,2]) / num_colors
-#     complements = np.zeros(base.shape)
-#     for i in range(num_colors):
-#         complements[i] = base[i]
-#         if (colors[i][2] < avg_l):
-#             complements[i][2] += delta_l
-#             complements[i][1] += complements[i][2] ** 5
-#         else:
-#             base[i][2] -= delta_l
-#             base[i][1] -= complements[i][2] ** 5 # when the light value is high, put a HARD dampener on the saturation of the darker complement
-
-#     complements = np.clip(complements, 0, 1)
-#     base = np.clip(base, 0, 1)
-
-#     combined = np.empty((num_colors * 2, 3), dtype = colors.dtype)
-#     combined[0::2] = base
-#     combined[1::2] = complements
-#     return combined
 
 
 with open('resources/gvcci-title-ascii.txt', 'r') as logo:
@@ -93,7 +64,7 @@ while arg_id < len(sys.argv):
             config[commandline_param] = sys.argv[arg_id + 1]
             arg_id += 1
         else:
-            image_paths.append(commandline_param)
+            image_paths.append(os.path.realpath(commandline_param))
     arg_id += 1
 
 for img_file_path in image_paths:

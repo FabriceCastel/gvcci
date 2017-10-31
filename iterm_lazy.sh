@@ -1,6 +1,7 @@
 #!/bin/bash
 
-python3 extract.py $1 --template templates/iterm.plist
+echo $1
+python3 extract.py "$1" --template templates/iterm.plist --background dark
 cp gvcci.plist ~/Library/Application\ Support/iTerm2/DynamicProfiles/
 
 # set macOS wallpaper
