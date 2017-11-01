@@ -127,7 +127,7 @@ for img_file_path in image_paths:
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
     ansi_colors = ansi_colors_normal_and_bright
 
-    html_contents += get_html_contents(ansi_colors, np.vstack((bg_color, fg_color)), img_file_path)
+    html_contents += get_html_contents(ansi_colors, bg_color, fg_color, img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
     html += html_contents

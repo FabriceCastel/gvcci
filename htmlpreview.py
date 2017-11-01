@@ -25,8 +25,8 @@ def html_color_list(title, colors, col_width = 300):
 def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
-def get_preview_image(img_file_path, ansi_colors, bg_color):
-    hex = hsllist2hex(ansi_colors)
+def get_preview_image(img_file_path, ansi_colors, bg_color, fg_color):
+    hex = hsllist2hex(np.vstack((ansi_colors, fg_color)))
     bg_rgb = hsl2rgb(bg_color)
 
     black =    0
@@ -37,6 +37,7 @@ def get_preview_image(img_file_path, ansi_colors, bg_color):
     magenta =  10
     cyan =     12
     white =    14
+    fg =       16
 
     sample = """package colorscheme.example
 
@@ -65,17 +66,17 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     color_groups = [
         (cyan, ["def"]),
-        (yellow, ["acc"]),
-        (black, ["::"]),
-        (yellow, ["tail: "]),
+        (fg, ["acc"]),
+        (magenta, ["::"]),
+        (fg, ["tail: "]),
         (white, [": "]),
-        (magenta, ["@annotation.tailrec", "match", "case", "."]),
-        (yellow, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "tail(", "tail)", " go", "stream", "reverse"]),
+        (yellow, ["@annotation.tailrec", "match", "case", "."]),
+        (fg, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "tail(", "tail)", " go", "stream", "reverse"]),
         (red, ["= ", "=>"]),
         (green, ["// The natural recursive solution"]),
         (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
         (cyan, ["package", "object", "class", "trait", "import"]),
-        (black, ["extends", "+"]),
+        (magenta, ["extends", "+"]),
         (white, ["{", "}", "[", "]", "(", ")", ","])
     ]
 
@@ -99,12 +100,12 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
         if (i + 1 < 10):
             prefix = ' ' + prefix
 
-        prefix = wrap_in_span(prefix, hex[black])
+        prefix = wrap_in_span(prefix, hex[fg])
 
         if (i < len(lines)):
             vim += prefix + lines[i] + '\n'
         else:
-            vim += wrap_in_span('~\n', hex[black])
+            vim += wrap_in_span('~\n', hex[fg])
 
 
     html += vim
@@ -114,14 +115,14 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
 
     return img_preview + "<div style='margin-bottom: 200px; height: " + str(height) + "px; width: " + str(width) + "px; overflow: hidden; position: relative;'>" + html + "</div>"
 
-def get_html_contents(ansi_colors, bg_fg_colors, img_file_path):
-    html = get_preview_image(img_file_path, ansi_colors, bg_fg_colors[0])
+def get_html_contents(ansi_colors, bg_color, fg_color, img_file_path):
+    html = get_preview_image(img_file_path, ansi_colors, bg_color, fg_color)
     html += "<div style='display: flex; overflow: scroll;'>"
     # html += html_color_list("3D HSL", sort_by_h(centers))
     # html += html_color_list("Filtered 3D HSL", custom_filter_and_sort(centers))
     # html += html_color_list("4D HSL", sort_by_h(improved_centers))
     # html += html_color_list("Filtered 4D HSL", filter_by_custom(improved_centers))
-    html += html_color_list("List", ansi_colors)
+    # html += html_color_list("List", ansi_colors)
     html += "</div>"
     
     return html
