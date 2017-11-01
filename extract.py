@@ -106,17 +106,20 @@ for img_file_path in image_paths:
 
     # improved_centers = np.vstack((bg_fg_colors, improved_centers))
 
+
+    # Accessibility contrast levels:
+    # WCAG 2.0 level AA requires a contrast ratio of 4.5:1 for normal text
+    # WCAG 2.0 level AAA requires a contrast ratio of 7:1 for normal text
+    # Note: the contrast maxes out at 21.0 for white / black contrast
+
     # dark theme settings
-    min_dark_contrast = 0.75
-    min_light_contrast = 0.1
+    min_dark_contrast = 4.5
+    min_light_contrast = 3
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
-        print("Setting contrast levels for light theme")
-        min_dark_contrast = 0.1
-        min_light_contrast = 0.45
-    else:
-        print("setting contrast levels for dark theme")
+        min_dark_contrast = 3
+        min_light_contrast = 4.5
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)

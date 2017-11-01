@@ -36,18 +36,6 @@ def rgb2rl(rgb_color):
     g = rgb[1]
     b = rgb[2]
 
-    # TODO make this more robust
-    # This is a workaround to avoid dark values too close to zero always yielding good contrast results
-    # when they really shouldn't
-    min_val = 25
-
-    if (r < min_val):
-        r = min_val
-    if (g < min_val):
-        g = min_val
-    if (b < min_val):
-        b = min_val
-
     rg = r / 3294 if (r <= 10) else (r / 269 + 0.0513) ** 2.4
     gg = g / 3294 if (g <= 10) else (g / 269 + 0.0513) ** 2.4
     bg = b / 3294 if (b <= 10) else (b / 269 + 0.0513) ** 2.4
