@@ -1,7 +1,9 @@
 .DS_Store
 examples.html
+examples/*
 /*.png
 /*.jpg
 /gvcci.plist
 /gvcci.txt
+/gvcci.itermcolors
 __pycache__/
