@@ -115,11 +115,11 @@ for img_file_path in image_paths:
 
     # dark theme settings
     min_dark_contrast = 5
-    min_light_contrast = 2.5
+    min_light_contrast = 1.7
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
-        min_dark_contrast = 5
+        min_dark_contrast = 9
         min_light_contrast = 4
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
