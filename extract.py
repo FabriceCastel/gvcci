@@ -75,14 +75,12 @@ for img_file_path in image_paths:
 
     dominant_dark_and_light_colors = find_dominant_by_frequency(hsl_colors)
 
-    max_dominant_saturation = 0.2
+    max_dominant_saturation = 0.35
     muted_dominants = dominant_dark_and_light_colors
     if (muted_dominants[0][0][1] > max_dominant_saturation):
         muted_dominants[0][0][1] = max_dominant_saturation
     if (muted_dominants[1][0][1] > max_dominant_saturation):
         muted_dominants[1][0][1] = max_dominant_saturation
-
-
 
     bg_color = muted_dominants[0]
     fg_color = muted_dominants[1]
