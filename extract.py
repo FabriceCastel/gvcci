@@ -75,28 +75,25 @@ for img_file_path in image_paths:
 
     dominant_dark_and_light_colors = find_dominant_by_frequency(hsl_colors)
 
-    max_dominant_saturation = 0.35
-    muted_dominants = dominant_dark_and_light_colors
-    if (muted_dominants[0][0][1] > max_dominant_saturation):
-        muted_dominants[0][0][1] = max_dominant_saturation
-    if (muted_dominants[1][0][1] > max_dominant_saturation):
-        muted_dominants[1][0][1] = max_dominant_saturation
+    bg_color = dominant_dark_and_light_colors[0]
+    fg_color = dominant_dark_and_light_colors[1]
 
-    bg_color = muted_dominants[0]
-    fg_color = muted_dominants[1]
-
-    dominant_dark = muted_dominants[0]
-    dominant_light = muted_dominants[1]
+    dominant_dark = dominant_dark_and_light_colors[0]
+    dominant_light = dominant_dark_and_light_colors[1]
 
     if (dominant_dark[0][2] > dominant_light[0][2]):
         tmp = dominant_light
         dominant_light = dominant_dark
         dominant_dark = tmp
 
-    if config[background_color_param_name] == "dark":
+    max_dominant_dark_saturation = 0.4
+
+    if config[background_color_param_name] == "dark" or (config[background_color_param_name] == "auto" and bg_color[0][2] < 0.5):
+        if (dominant_dark[0][1] > max_dominant_dark_saturation):
+            dominant_dark[0][1] = max_dominant_dark_saturation
         bg_color = dominant_dark
         fg_color = dominant_light
-    elif config[background_color_param_name] == "light":
+    elif config[background_color_param_name] == "light" or (config[background_color_param_name] == "auto" and bg_color[0][2] > 0.5):
         bg_color = dominant_light
         fg_color = dominant_dark
     elif config[background_color_param_name][0] == "#":

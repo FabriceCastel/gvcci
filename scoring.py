@@ -281,6 +281,7 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark
     return within_bounds
 
 def find_dominant_by_frequency(hsl_colors):
+    dark_frequency_boost = 2.0 # prefer dark backgrounds over light
     dominant_dark = black
     dominant_light = white
     dark_frequency = 0
@@ -288,7 +289,7 @@ def find_dominant_by_frequency(hsl_colors):
 
     precision = 32
     dark_l = 0.2
-    light_l = 0.8
+    light_l = 0.7
     light_l_upper = 0.95
 
     light_colors = hsl_colors[hsl_colors[:,2] > light_l]
@@ -304,7 +305,7 @@ def find_dominant_by_frequency(hsl_colors):
         dominant_light, light_frequency = mode_rows((light_colors * precision).astype(int))
         dominant_light = dominant_light.reshape(1, 3) / precision
 
-    if dark_frequency >= light_frequency:
+    if (dark_frequency * dark_frequency_boost) >= light_frequency:
         return (dominant_dark, dominant_light)
     else:
         return (dominant_light, dominant_dark)
