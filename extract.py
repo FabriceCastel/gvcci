@@ -113,13 +113,13 @@ for img_file_path in image_paths:
     # Note: the contrast maxes out at 21.0 for white / black contrast
 
     # dark theme settings
-    min_dark_contrast = 4.5
-    min_light_contrast = 3
+    min_dark_contrast = 7
+    min_light_contrast = 4
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
-        min_dark_contrast = 3
-        min_light_contrast = 4.5
+        min_dark_contrast = 4
+        min_light_contrast = 7
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)

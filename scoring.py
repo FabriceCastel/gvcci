@@ -205,6 +205,7 @@ def contrast_between_boundaries(colors, dark_boundary, light_boundary, min_dark_
     return np.minimum(dark_contrast, light_contrast)
 
 def clip_between_boundaries(hsl_colors, dark_boundary, light_boundary, min_dark_contrast, min_light_contrast):
+    hsl_colors = hsl_colors.reshape(-1, 3)
     dark_contrast = contrast_between_all(hsl_colors, dark_boundary)
     light_contrast = contrast_between_all(hsl_colors, light_boundary)
 
@@ -250,7 +251,7 @@ def find_nearest_pair(colors):
 
     return (index_1, index_2)
 
-def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_boundary = white, dark_min_contrast = 0.4, light_min_contrast = 0.2):
+def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast):
     max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
 
     def boundary_contrast(colors):
@@ -263,10 +264,6 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
         return colors[boundary_contrast(colors) >= contrast_threshold]
 
     within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
-    # print("Found " + str(len(within_bounds)) + " qualified color candidates between boundaries")
-    # print(dark_boundary)
-    # print(light_boundary)
-    # print(within_bounds)
 
     if len(within_bounds) <= n_colors:
         within_bounds = sort_by_contrast(hsl_colors)[:n_colors]
@@ -282,10 +279,6 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary = black, light_bounda
             within_bounds = np.delete(within_bounds, pair[0], 0)
 
     return within_bounds
-
-# number of dar, mid-tones and light colors needed
-def pick_best(hsl_colors, num_dark, num_mid, num_light):
-    return [], [], []
 
 def find_dominant_by_frequency(hsl_colors):
     dominant_dark = black
