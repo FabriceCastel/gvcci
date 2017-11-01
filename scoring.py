@@ -290,11 +290,9 @@ def find_dominant_by_frequency(hsl_colors):
     dark_l = 0.2;
     light_l = 0.8;
     light_l_upper = 0.95;
-    light_s_upper = 0.4;
 
     light_colors = hsl_colors[hsl_colors[:,2] > light_l]
     light_colors = light_colors[light_colors[:,2] < light_l_upper]
-    light_colors = light_colors[light_colors[:,1] < light_s_upper]
 
     dark_colors = hsl_colors[hsl_colors[:,2] < dark_l]
 

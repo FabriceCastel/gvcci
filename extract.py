@@ -75,11 +75,20 @@ for img_file_path in image_paths:
 
     dominant_dark_and_light_colors = find_dominant_by_frequency(hsl_colors)
 
-    bg_color = dominant_dark_and_light_colors[0]
-    fg_color = dominant_dark_and_light_colors[1]
+    max_dominant_saturation = 0.2
+    muted_dominants = dominant_dark_and_light_colors
+    if (muted_dominants[0][0][1] > max_dominant_saturation):
+        muted_dominants[0][0][1] = max_dominant_saturation
+    if (muted_dominants[1][0][1] > max_dominant_saturation):
+        muted_dominants[1][0][1] = max_dominant_saturation
 
-    dominant_dark = dominant_dark_and_light_colors[0]
-    dominant_light = dominant_dark_and_light_colors[1]
+
+
+    bg_color = muted_dominants[0]
+    fg_color = muted_dominants[1]
+
+    dominant_dark = muted_dominants[0]
+    dominant_light = muted_dominants[1]
 
     if (dominant_dark[0][2] > dominant_light[0][2]):
         tmp = dominant_light
@@ -104,9 +113,6 @@ for img_file_path in image_paths:
     # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
     # TODO bg color breaks for the isaac example because the black bg is a flat #000000 color that's filtered out
 
-    # improved_centers = np.vstack((bg_fg_colors, improved_centers))
-
-
     # Accessibility contrast levels:
     # WCAG 2.0 level AA requires a contrast ratio of 4.5:1 for normal text
     # WCAG 2.0 level AAA requires a contrast ratio of 7:1 for normal text
@@ -114,18 +120,17 @@ for img_file_path in image_paths:
 
     # dark theme settings
     min_dark_contrast = 7
-    min_light_contrast = 4
+    min_light_contrast = 2.5
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
-        min_dark_contrast = 4
+        min_dark_contrast = 2.5
         min_light_contrast = 7
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
-    ansi_colors = ansi_colors_normal_and_bright # shorthand
-    # ansi_colors, bg_color = custom_filter_and_sort_complements(improved_centers, bg_fg_colors[0])
+    ansi_colors = ansi_colors_normal_and_bright
 
     html_contents += get_html_contents(ansi_colors, np.vstack((bg_color, fg_color)), img_file_path)
     html =  "<body style='background: #000'>\n"
