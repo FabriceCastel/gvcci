@@ -61,6 +61,7 @@ Running the program will print the generated color palette, generate an examples
 - [X] Add the ability to use output templates
 - [ ] Add commandline param to set the image as wallpaper
 - [ ] Generalize script? (ie. be able to request X light colors, Y dark colors and Z variants on each color)
+- [ ] Store color theme in ~./gvcci/themes/.../ to allow for easy reuse with other templates rather than recompute the colors every time
 - [ ] Add commandline params to specify min/max contrast levels between light and dark colours, min/max saturation values, etc
 
 ## Templates
