@@ -40,15 +40,15 @@ To setup the project:
 3. ```python3 setup.py install``` to install the hasel dependency
 4. ```python3 extract.py path/to/image.jpg``` to run the program
 
-Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out template.
+Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out templates.
 
 ## Options
 
 `--background [auto|light|dark|<hex>]` - Defaults to `auto`, which can pick either a light or dark background depending on the image. The `light` and `dark` options have it pick either a light or a dark color from the image as the background, and `<hex>` allows you to specify a hex code to use as background color.
 
-`--template [file]` - Defaults to `./templates/iterm.itermcolors`. Specify which template to use when generating the output. For more information regarding templates, refer to the Templates section below.
+`--template [file|directory]` - Defaults to `./templates`. Specify which template to use when generating the output. If your argument is a file, that template file will be used. If it's a directory, all files in that directory will be used as templates. For more information regarding templates, refer to the Templates section below.
 
-*EXPERIMENTAL* macOS iTerm users with a recent version of iTerm can run ```iterm_lazy.sh [img_path]``` for an easy one-step extract palette + generate iTerm profile + update iTerm profile + update wallpaper.
+*EXPERIMENTAL* macOS iTerm users with a recent version of iTerm can run ```iterm_lazy.sh [img_path]``` for an easy one-step extract palette + generate iTerm profile + update iTerm profile + update wallpaper. You will need a recent version of iTerm (one that supports dynamic profiles) for this to work.
 
 ## Roadmap/TODO List
 
