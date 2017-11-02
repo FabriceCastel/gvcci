@@ -202,7 +202,7 @@ for img_file_path in image_paths:
         colors[name + "-blue-float"]  = rgb[2] / 255
         colors[name + "-hex"]         = hex
 
-    template_file_path = config[template_param_name]
+    template_file_path = os.path.realpath(config[template_param_name])
     # template_file_name = template_file_path.split('/')[-1]
     # template_file_name_parts = template_file_name.split('.')
     # template_file_extension = ""
