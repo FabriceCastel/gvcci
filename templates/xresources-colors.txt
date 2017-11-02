@@ -1,0 +1,37 @@
+! COLORS
+! special
+*.foreground:   {{foreground-hex}}
+*.background:   {{background-hex}}
+*.cursorColor:  {{foreground-hex}}
+
+! black
+*.color0:       {{ansi-black-normal-hex}}
+*.color8:       {{ansi-black-bright-hex}}
+
+! red
+*.color1:       {{ansi-red-normal-hex}}
+*.color9:       {{ansi-red-bright-hex}}
+
+! green
+*.color2:       {{ansi-green-normal-hex}}
+*.color10:      {{ansi-green-bright-hex}}
+
+! yellow
+*.color3:       {{ansi-yellow-normal-hex}}
+*.color11:      {{ansi-yellow-bright-hex}}
+
+! blue
+*.color4:       {{ansi-blue-normal-hex}}
+*.color12:      {{ansi-blue-bright-hex}}
+
+! magenta
+*.color5:       {{ansi-magenta-normal-hex}}
+*.color13:      {{ansi-magenta-bright-hex}}
+
+! cyan
+*.color6:       {{ansi-cyan-normal-hex}}
+*.color14:      {{ansi-cyan-bright-hex}}
+
+! white
+*.color7:       {{ansi-white-normal-hex}}
+*.color15:      {{ansi-white-bright-hex}}
