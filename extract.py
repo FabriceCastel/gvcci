@@ -1,5 +1,6 @@
 import os
 import sys
+from shutil import copyfile
 
 import numpy as np
 
@@ -38,6 +39,19 @@ def get_pixels_for_image(img_file_path):
 
 with open('resources/gvcci-title-ascii.txt', 'r') as logo:
     print(logo.read())
+
+
+dir_path = os.path.expanduser("~/.gvcci")
+try:
+    os.stat(dir_path)
+except:
+    os.mkdir(dir_path)
+
+dir_path = os.path.expanduser("~/.gvcci/themes")
+try:
+    os.stat(dir_path)
+except:
+    os.mkdir(dir_path)
 
 html_contents = ""
 
@@ -189,11 +203,11 @@ for img_file_path in image_paths:
         colors[name + "-hex"]         = hex
 
     template_file_path = config[template_param_name]
-    template_file_name = template_file_path.split('/')[-1]
-    template_file_name_parts = template_file_name.split('.')
-    template_file_extension = ""
-    if len(template_file_name_parts) > 1:
-        template_file_extension = "." + "".join(template_file_name_parts[1:])
+    # template_file_name = template_file_path.split('/')[-1]
+    # template_file_name_parts = template_file_name.split('.')
+    # template_file_extension = ""
+    # if len(template_file_name_parts) > 1:
+    #     template_file_extension = "." + "".join(template_file_name_parts[1:])
 
     print("=========== Terminal Colors ===========")
     with open('templates/columns-with-headers.txt', 'r') as print_template:
@@ -202,10 +216,25 @@ for img_file_path in image_paths:
 
     with open(template_file_path, 'r') as template_file:
         template = template_file.read()
+        template_file_name = os.path.basename(template_file_path)
 
         # set name constant for the iTerm dynamic profile
-        image_name = "gvcci" # ".".join(img_file_path.split('/')[-1].split('.')[:-1])
-        with open(image_name + template_file_extension, 'w') as out_file:
+        image_name = os.path.basename(img_file_path).split(".")[0]
+        image_extension = os.path.basename(img_file_path).split(".")[-1]
+
+        output_dir_path = os.path.join(os.path.expanduser("~/.gvcci/themes"), image_name)
+        output_theme_path = os.path.join(output_dir_path, template_file_name)
+        try:
+            os.stat(output_dir_path)
+        except:
+            os.mkdir(output_dir_path)
+
+        output_image_path = os.path.join(output_dir_path, "wallpaper." + image_extension)
+        copyfile(img_file_path, output_image_path)
+
+        with open(output_theme_path, 'w') as out_file:
             out_file.write(pystache.render(template, colors))
-            print("Output: " + image_name + template_file_extension)
+        
+        print("Output: " + output_theme_path)
+        print("Output: " + output_image_path)
 
