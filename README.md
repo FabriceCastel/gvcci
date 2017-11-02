@@ -40,7 +40,7 @@ To setup the project:
 3. ```python3 setup.py install``` to install the hasel dependency
 4. ```python3 extract.py path/to/image.jpg``` to run the program
 
-Running the program will print the generated color palette and generate an html file with some previews that you can open in any web browser.
+Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out template.
 
 ## Options
 
@@ -55,6 +55,7 @@ Running the program will print the generated color palette and generate an html 
 - [X] Output a foreground color
 - [X] Assign adequately dark color to the ANSI 'Black' color value
 - [ ] Improve background color selection for light themes
+- [X] Improve theme bundling
 - [X] Improve syntax colors for light themes
 - [X] Refactor the codebase and modularize it where appropriate
 - [X] Add the ability to use output templates
