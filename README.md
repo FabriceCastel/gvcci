@@ -57,6 +57,7 @@ Running the program will print the generated color palette, generate an examples
 - [ ] Improve background color selection for light themes
 - [X] Improve theme bundling
 - [X] Improve syntax colors for light themes
+- [X] Map the generated colors to their nearest ANSI counterpart (ie. the ANSI red should be the most "red" of the generated colors etc)
 - [X] Refactor the codebase and modularize it where appropriate
 - [X] Add the ability to use output templates
 - [ ] Add commandline param to set the image as wallpaper
