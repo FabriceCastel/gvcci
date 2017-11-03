@@ -1,4 +1,4 @@
-Backgorund
+Background
 {{background-hex}}
 
 Foreground
