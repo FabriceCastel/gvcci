@@ -2,11 +2,12 @@ import unittest
 
 import numpy as np
 
-from scoring import contrast_between, clip_between_boundaries, sort_colors_by_closest_counterpart
+from scoring import contrast_between, clip_between_boundaries, sort_colors_by_closest_counterpart, distance_between_colors
 
 white_hsl = np.array([0, 0, 1])
 black_hsl = np.array([0, 0, 0])
 red_hsl = np.array([0, 1, 0.5])
+red_2_hsl = np.array([0.9999999, 1, 0.5])
 dark_red_hsl = np.array([0, 1, 0.2])
 light_red_hsl = np.array([0, 1, 0.95])
 
@@ -102,6 +103,10 @@ class ScoringTest(unittest.TestCase):
 		self.assertEqual(sorted[0][0], 1)
 		self.assertEqual(sorted[1][0], 0.5)
 		self.assertEqual(sorted[2][0], 0)
+
+	def test_distance_between_colors_hue_circle_extremities(self):
+		dist = distance_between_colors(red_hsl, red_2_hsl)
+		self.assertTrue(dist < 0.01)
 		
 
 if __name__ == '__main__':

@@ -84,18 +84,38 @@ def filter_v_and_sort_by_h(colors):
 def custom_filter_and_sort(colors):
     return custom_sort(filter_by_v(colors))
 
-# TODO use a combination of contrast and delta hue here?
-def distance_between_colors(a, b):
-    # HSL looks like a bicone, the distance function should take this into account
+def distance_measures_between_colors(a, b):
+    # HSL looks like a bicone
 
     # adjust the saturation component for more accurate distance calculation
     sa = 2 * (0.5 - abs(0.5 - a[2])) * a[1]
-    sb = 2 * (0.5 - abs(0.5 - b[2])) * b[2]
+    sb = 2 * (0.5 - abs(0.5 - b[2])) * b[1]
     ds = sa - sb
 
-    dh = a[0] - b[0]
+    # hue is circular
+    #
+    # 0            1/0            1
+    # |---A-----B---|
+    #               |---A-----B---|
+    # 
+    #           |---|---|
+    #           1-B + A
+    #
+    #     |---------|---------|
+    #        1 - A  +    B
+    #
+    #     |-----|
+    #      B - A
+    #
+    dh = min(abs(a[0] - b[0]), abs(1 - a[0] - b[0]))
+
     dl = a[2] - b[2]
 
+    return abs(dh), abs(ds), abs(dl)
+
+
+def distance_between_colors(a, b):
+    dh, ds, dl = distance_measures_between_colors
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
 
@@ -316,8 +336,10 @@ def sort_colors_by_closest_counterpart(hsl_colors, hsl_counterparts):
     for counterpart in hsl_counterparts:
         closest_index = 0
         closest_dist = 10000
+        print('for ' + str(counterpart))
         for i in range(len(hsl_colors_copy)):
-            dist = distance_between_colors(hsl_colors_copy[i], counterpart)
+            dh, ds, dl = distance_measures_between_colors(hsl_colors_copy[i], counterpart)
+            dist = (dh ** 2) * (1 + ds) * (0.3 + dl) # take the saturation/lightness into account, but only a little
             if (dist < closest_dist):
                 closest_index = i
                 closest_dist = dist

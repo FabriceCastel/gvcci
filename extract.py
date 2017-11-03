@@ -136,20 +136,31 @@ for img_file_path in image_paths:
         min_dark_contrast = 9
         min_light_contrast = 4
 
+    # ansi constants
+    black   = [0,       0, 0. ]
+    red     = [0,       1, 0.5]
+    green   = [0.33333, 1, 0.5]
+    yellow  = [0.16666, 1, 0.5]
+    blue    = [0.66666, 1, 0.5]
+    magenta = [0.83333, 1, 0.5]
+    cyan    = [0.5,     1, 0.5]
+    white   = [0,       0, 1. ]
+
     standard_ansi_colors = np.array([
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        red,
+        green,
+        yellow,
+        blue,
+        magenta,
+        cyan,
+        white,
+        black
     ])
 
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_sorted = sort_colors_by_closest_counterpart(ansi_colors_normal, standard_ansi_colors)
+    print(ansi_colors_sorted)
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_sorted)
     ansi_colors = ansi_colors_normal_and_bright
 
@@ -180,25 +191,25 @@ for img_file_path in image_paths:
         "background":          bg_color,
         "foreground":          fg_color,
         "bold":                fg_color, # TODO!
-        "cursor":              ansi_colors[2],
-        "selection":           ansi_colors[0],
+        "cursor":              ansi_colors[14],
+        "selection":           ansi_colors[15],
         "selected-text":       bg_color,
         "ansi-black-normal":   black,
         "ansi-black-bright":   black_bright,
-        "ansi-red-normal":     ansi_colors[2],
-        "ansi-red-bright":     ansi_colors[3],
-        "ansi-green-normal":   ansi_colors[4],
-        "ansi-green-bright":   ansi_colors[5],
-        "ansi-yellow-normal":  ansi_colors[6],
-        "ansi-yellow-bright":  ansi_colors[7],
-        "ansi-blue-normal":    ansi_colors[8],
-        "ansi-blue-bright":    ansi_colors[9],
-        "ansi-magenta-normal": ansi_colors[10],
-        "ansi-magenta-bright": ansi_colors[11],
-        "ansi-cyan-normal":    ansi_colors[12],
-        "ansi-cyan-bright":    ansi_colors[13],
-        "ansi-white-normal":   ansi_colors[14],
-        "ansi-white-bright":   ansi_colors[15]
+        "ansi-red-normal":     ansi_colors[0],
+        "ansi-red-bright":     ansi_colors[1],
+        "ansi-green-normal":   ansi_colors[2],
+        "ansi-green-bright":   ansi_colors[3],
+        "ansi-yellow-normal":  ansi_colors[4],
+        "ansi-yellow-bright":  ansi_colors[5],
+        "ansi-blue-normal":    ansi_colors[6],
+        "ansi-blue-bright":    ansi_colors[7],
+        "ansi-magenta-normal": ansi_colors[8],
+        "ansi-magenta-bright": ansi_colors[9],
+        "ansi-cyan-normal":    ansi_colors[10],
+        "ansi-cyan-bright":    ansi_colors[11],
+        "ansi-white-normal":   ansi_colors[12],
+        "ansi-white-bright":   ansi_colors[13]
     }
 
     colors = {}
