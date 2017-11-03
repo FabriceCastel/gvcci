@@ -13,7 +13,7 @@ import pystache
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
-from scoring import custom_filter_and_sort_complements, pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
+from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
 from colorgenerator import generate_complementary
 
 n_colors = 16 # must be less than or equal to n_clusters

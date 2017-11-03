@@ -1,4 +1,3 @@
-from scoring import custom_filter_and_sort_complements
 from converters import hsllist2hex, hex2rgb, hsl2rgb
 
 import numpy as np
