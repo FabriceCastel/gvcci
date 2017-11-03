@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from scoring import contrast_between, clip_between_boundaries
+from scoring import contrast_between, clip_between_boundaries, sort_colors_by_closest_counterpart
 
 white_hsl = np.array([0, 0, 1])
 black_hsl = np.array([0, 0, 0])
@@ -48,6 +48,60 @@ class ScoringTest(unittest.TestCase):
 		self.assertTrue(0.4 < clipped[2])
 		self.assertTrue(4.5 <= clipped_contrast_black)
 		self.assertTrue(4.5 <= clipped_contrast_white <= 5)
+
+	def test_sorted_by_closest_counterpart_even(self):
+		colors = np.array([
+			[0, 0, 0],
+			[1, 1, 1]
+		])
+
+		counterpart = np.array([
+			[1, 1, 1],
+			[0, 0, 0]
+		])
+
+		sorted = sort_colors_by_closest_counterpart(colors, counterpart)
+
+		self.assertEqual(colors.shape, sorted.shape)
+		self.assertEqual(sorted[0][0], 1)
+		self.assertEqual(sorted[1][0], 0)
+
+	def test_sorted_by_closest_counterpart_duplicates(self):
+		colors = np.array([
+			[0, 0, 0],
+			[1, 1, 1]
+		])
+
+		counterpart = np.array([
+			[0, 0, 0],
+			[0, 0, 0]
+		])
+
+		sorted = sort_colors_by_closest_counterpart(colors, counterpart)
+
+		self.assertEqual(colors.shape, sorted.shape)
+		self.assertEqual(sorted[0][0], 0)
+		self.assertEqual(sorted[1][0], 1)
+
+	def test_sorted_by_closest_counterpart_odd(self):
+		colors = np.array([
+			[0, 0, 0],
+			[1, 1, 1],
+			[0.5, 0.5, 0.5]
+		])
+
+		counterpart = np.array([
+			[1, 1, 1],
+			[0.5, 0.5, 0.5],
+			[0, 0, 0]
+		])
+
+		sorted = sort_colors_by_closest_counterpart(colors, counterpart)
+
+		self.assertEqual(colors.shape, sorted.shape)
+		self.assertEqual(sorted[0][0], 1)
+		self.assertEqual(sorted[1][0], 0.5)
+		self.assertEqual(sorted[2][0], 0)
 		
 
 if __name__ == '__main__':

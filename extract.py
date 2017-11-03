@@ -13,7 +13,7 @@ import pystache
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
-from scoring import custom_filter_and_sort_complements, pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency
+from scoring import custom_filter_and_sort_complements, pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
 from colorgenerator import generate_complementary
 
 n_colors = 16 # must be less than or equal to n_clusters
@@ -136,9 +136,21 @@ for img_file_path in image_paths:
         min_dark_contrast = 9
         min_light_contrast = 4
 
+    standard_ansi_colors = np.array([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ])
+
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
-    ansi_colors_normal_and_bright = generate_complementary(ansi_colors_normal)
+    ansi_colors_sorted = sort_colors_by_closest_counterpart(ansi_colors_normal, standard_ansi_colors)
+    ansi_colors_normal_and_bright = generate_complementary(ansi_colors_sorted)
     ansi_colors = ansi_colors_normal_and_bright
 
     html_contents += get_html_contents(ansi_colors, bg_color, fg_color, img_file_path)

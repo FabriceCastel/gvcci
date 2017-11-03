@@ -310,5 +310,20 @@ def find_dominant_by_frequency(hsl_colors):
     else:
         return (dominant_light, dominant_dark)
 
+def sort_colors_by_closest_counterpart(hsl_colors, hsl_counterparts):
+    hsl_colors_copy = hsl_colors.copy()
+    hsl_colors_sorted = []
+    for counterpart in hsl_counterparts:
+        closest_index = 0
+        closest_dist = 10000
+        for i in range(len(hsl_colors_copy)):
+            dist = distance_between_colors(hsl_colors_copy[i], counterpart)
+            if (dist < closest_dist):
+                closest_index = i
+                closest_dist = dist
 
+        hsl_colors_sorted.append(hsl_colors_copy[closest_index])
+        hsl_colors_copy = np.vstack((hsl_colors_copy[:closest_index], hsl_colors_copy[closest_index + 1:]))
+
+    return np.array(hsl_colors_sorted)
 
