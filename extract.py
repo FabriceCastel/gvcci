@@ -25,7 +25,7 @@ def get_pixels_for_image(img_file_path):
     img_rgb = io.imread(img_file_path)
 
     print("converting color space...")
-    img_hsl = hasel.rgb2hsl(img_rgb)
+    img_hsl = hasel.rgb2hsl(img_rgb[:,:,0:3])
     hsl_colors = img_hsl.reshape((-1, 3))
 
     print("filtering out darkest colors before clustering for better results...")
