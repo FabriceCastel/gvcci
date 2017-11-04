@@ -38,7 +38,8 @@ To setup the project:
 1. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/gvcci
 2. ```cd``` into your local copy of the git repository
 3. ```python3 setup.py install``` to install the hasel dependency
-4. ```python3 extract.py path/to/image.jpg``` to run the program
+4. ```git submodule init``` and ```git submodule update --remote --merge```
+5. ```python3 extract.py path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out templates.
 
