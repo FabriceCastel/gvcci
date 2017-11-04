@@ -1,0 +1,3 @@
+[submodule "gvcci-apply"]
+	path = gvcci-apply
+	url = git@github.com:FabriceCastel/gvcci-apply.git
