@@ -272,3 +272,5 @@ for img_file_path in image_paths:
                 
                 print("Output: " + output_theme_path)
 
+    print("=======================================")
+

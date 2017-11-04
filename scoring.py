@@ -49,7 +49,7 @@ def distance_measures_between_colors(a, b):
 
 
 def distance_between_colors(a, b):
-    dh, ds, dl = distance_measures_between_colors
+    dh, ds, dl = distance_measures_between_colors(a, b)
     return (dh ** 2) + (ds ** 2) + (dl ** 2)
 
 def adjust_contrast(colors, bg):
