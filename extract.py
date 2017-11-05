@@ -14,7 +14,7 @@ from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
 from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
-from colorgenerator import generate_complementary
+from colorgenerator import generate_complementary, generate_similar
 
 n_colors = 16 # must be less than or equal to n_clusters
 v_threshold = 0.05 # ignore colors darker than this
@@ -102,12 +102,16 @@ for img_file_path in image_paths:
 
     max_dominant_dark_saturation = 0.4
 
+    reference_dominant_light_color = np.array([[0, 0, 0.94]])
+    reference_dominant_light_color = np.array([[0, 0, dominant_light[0][2]]])
+
     if config[background_color_param_name] == "dark" or (config[background_color_param_name] == "auto" and bg_color[0][2] < 0.5):
         if (dominant_dark[0][1] > max_dominant_dark_saturation):
             dominant_dark[0][1] = max_dominant_dark_saturation
         bg_color = dominant_dark
         fg_color = dominant_light
     elif config[background_color_param_name] == "light" or (config[background_color_param_name] == "auto" and bg_color[0][2] > 0.5):
+        dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.07)
         bg_color = dominant_light
         fg_color = dominant_dark
     elif config[background_color_param_name][0] == "#":

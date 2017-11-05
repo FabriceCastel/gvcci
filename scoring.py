@@ -1,6 +1,5 @@
 import numpy as np
 
-from colorgenerator import generate_complementary
 from converters import hsllist2rl, hsl2rl
 
 
