@@ -133,6 +133,8 @@ def find_nearest_pair(colors):
 def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast):
     max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
 
+    # TODO remove exact duplicates before proceeding (so long as there are still enough colors?)
+
     def boundary_contrast(colors):
         return contrast_between_boundaries(colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast)
 
@@ -145,6 +147,7 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark
     within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
 
     if len(within_bounds) <= n_colors:
+        print('not enough colors :((((')
         within_bounds = sort_by_contrast(hsl_colors)[:n_colors]
 
     while len(within_bounds) > n_colors:
@@ -152,6 +155,11 @@ def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark
         scored = sort_by_contrast(np.array([within_bounds[pair[0]], within_bounds[pair[1]]]))
         a = scored[0]
         b = within_bounds[pair[0]]
+
+        print('found pair')
+        print(a)
+        print(b)
+
         if a[0] == b[0] and a[1] == b[1] and a[2] == b[2]:
             within_bounds = np.delete(within_bounds, pair[1], 0)
         else:
