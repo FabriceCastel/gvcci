@@ -5,7 +5,6 @@ from scoring import contrast_between
 def generate_complementary(colors, delta_l = 0.12):
     base = np.copy(colors)
     num_colors = base.shape[0]
-    # avg_s = np.sum(colors[:,1]) / num_colors
     avg_l = np.sum(colors[:,2]) / num_colors
     complements = np.zeros(base.shape)
     for i in range(num_colors):
@@ -31,12 +30,10 @@ def generate_similar(color_hsl, reference_hsl, max_contrast):
     corrected = color_hsl
 
     while (contrast_between(corrected, reference_hsl) > max_contrast):
-        print('adjusting...')
         current_mix -= increment
         corrected = (current_mix * color_hsl) + ((1 - current_mix) * reference_hsl)
         corrected[0][0] = color_hsl[0][0] # retain original hue
         if (current_mix <= 0):
-            print('failed to adjust')
             return reference_hsl
 
     return corrected
