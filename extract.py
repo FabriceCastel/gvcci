@@ -57,12 +57,14 @@ except:
 html_contents = ""
 
 # --background [dark|light|auto|<hex>]
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="create a terminal theme that matches an image")
 parser.add_argument("images", nargs="+")
 parser.add_argument("--background", default="auto",
-                    dest="background_color_param_name")
+                    dest="background_color_param_name",
+                    help="the shade for the theme background")
 parser.add_argument("--template", default="./templates",
-                    dest="template_param_name")
+                    dest="template_param_name",
+                    help="the template or directory of templates to use for the theme")
 config = parser.parse_args()
 image_paths = map(os.path.realpath, config.images)
 
