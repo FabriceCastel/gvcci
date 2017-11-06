@@ -117,7 +117,7 @@ for img_file_path in image_paths:
     elif config[background_color_param_name][0] == "#":
         bg_color = hex2rgb(config[background_color_param_name])
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
-        if (bg_color[2] < 0.5):
+        if (bg_color[0][2] < 0.5):
             fg_color = dominant_light
         else:
             fg_color = dominant_dark
