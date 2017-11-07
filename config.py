@@ -54,12 +54,12 @@ arguments = [
 		help="template or directory of templates to use for the theme",
 		default="./templates/",
 		dest="template_path"
-	),
-	Argument(
-		name="--config",
-		help="config file to use - this will override any other comandline arguments",
-		dest="config_path"
 	)
+	# Argument(
+	# 	name="--config",
+	# 	help="config file to use - this will override any other comandline arguments",
+	# 	dest="config_path"
+	# )
 ]
 
 def get_args():
