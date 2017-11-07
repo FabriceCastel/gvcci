@@ -133,7 +133,12 @@ def find_nearest_pair(colors):
 def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast):
     max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
 
-    # TODO remove exact duplicates before proceeding (so long as there are still enough colors?)
+    # remove exact duplicates
+    hsl_unique_colors = np.vstack({tuple(row) for row in hsl_colors})
+    hsl_colors = hsl_unique_colors
+    while(len(hsl_colors) < n_colors):
+        # needs to output at least n_colors
+        hsl_colors = np.vstack((hsl_colors, hsl_unique_colors))
 
     def boundary_contrast(colors):
         return contrast_between_boundaries(colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast)

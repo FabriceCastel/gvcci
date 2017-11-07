@@ -109,10 +109,6 @@ for img_file_path in image_paths:
         else:
             fg_color = dominant_dark
 
-    # TODO the gb colour detection sucks for light colors
-    # TODO adjust the bg color by picking the nearest color cluster to it and assigning it that value
-    # TODO bg color breaks for the isaac example because the black bg is a flat #000000 color that's filtered out
-
     # Accessibility contrast levels:
     # WCAG 2.0 level AA requires a contrast ratio of [4.5 : 1] for normal text
     # WCAG 2.0 level AAA requires a contrast ratio of [7 : 1] for normal text
