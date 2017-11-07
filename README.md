@@ -55,7 +55,8 @@ Running the program will print the generated color palette, generate an examples
 
 - [X] Output a foreground color
 - [X] Assign adequately dark color to the ANSI 'Black' color value
-- [ ] Improve background color selection for light themes
+- [X] Improve background color selection for light themes
+- [ ] Fix light themes resulting in dull grey background colors
 - [X] Improve theme bundling
 - [X] Improve syntax colors for light themes
 - [X] Map the generated colors to their nearest ANSI counterpart (ie. the ANSI red should be the most "red" of the generated colors etc)
