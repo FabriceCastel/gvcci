@@ -1,4 +1,3 @@
-import argparse
 import os
 import sys
 from shutil import copyfile
@@ -11,6 +10,7 @@ import hasel
 
 import pystache
 
+from config import get_args
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
@@ -56,17 +56,8 @@ except:
 
 html_contents = ""
 
-# --background [dark|light|auto|<hex>]
-parser = argparse.ArgumentParser(description="create a terminal theme that matches an image")
-parser.add_argument("images", nargs="+")
-parser.add_argument("--background", default="auto",
-                    dest="background_color_param_name",
-                    help="the shade for the theme background")
-parser.add_argument("--template", default="./templates",
-                    dest="template_param_name",
-                    help="the template or directory of templates to use for the theme")
-config = parser.parse_args()
-image_paths = map(os.path.realpath, config.images)
+args = get_args()
+image_paths = map(os.path.realpath, args.images)
 
 for img_file_path in image_paths:
     print("Generating colors for input " + str(img_file_path))
@@ -92,17 +83,17 @@ for img_file_path in image_paths:
     reference_dominant_light_color = np.array([[0, 0, 0.94]])
     reference_dominant_light_color = np.array([[0, 0, dominant_light[0][2]]])
 
-    if config.background_color_param_name == "dark" or (config.background_color_param_name == "auto" and bg_color[0][2] < 0.5):
+    if args.background == "dark" or (args.background == "auto" and bg_color[0][2] < 0.5):
         if (dominant_dark[0][1] > max_dominant_dark_saturation):
             dominant_dark[0][1] = max_dominant_dark_saturation
         bg_color = dominant_dark
         fg_color = dominant_light
-    elif config.background_color_param_name == "light" or (config.background_color_param_name == "auto" and bg_color[0][2] > 0.5):
+    elif args.background == "light" or (args.background == "auto" and bg_color[0][2] > 0.5):
         dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.07)
         bg_color = dominant_light
         fg_color = dominant_dark
-    elif config.background_color_param_name[0] == "#":
-        bg_color = hex2rgb(config.background_color_param_name)
+    elif args.background[0] == "#":
+        bg_color = hex2rgb(args.background)
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
         if (bg_color[0][2] < 0.5):
             fg_color = dominant_light
@@ -230,7 +221,7 @@ for img_file_path in image_paths:
     
     print("Output: " + output_image_path)
 
-    template_file_or_dir_path = os.path.realpath(config.template_param_name)
+    template_file_or_dir_path = os.path.realpath(args.template_path)
     if (os.path.isfile(template_file_or_dir_path)):
         template_file_path = template_file_or_dir_path
         with open(template_file_path, 'r') as template_file:
