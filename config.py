@@ -40,41 +40,42 @@ class Argument:
 arguments = [
 	Argument(
 		name="images",
-		help="the images to generate color themes for",
+		help="The images to generate color themes for.",
 		dest="images"
 	),
 	Argument(
 		name="--background",
-		help="[dark|light|<#hex_code>] specify whether the script should generate a light/dark theme or use a specific hex color for the background",
+		help="[dark|light|<#hex_code>] specify whether the script should generate a light/dark theme or use a specific hex color for the background.",
 		default="auto",
 		dest="background"
 	),
 	Argument(
 		name="--template",
-		help="template or directory of templates to use for the theme",
+		help="Template or directory of templates to use for the theme.",
 		default="./templates/",
 		dest="template_path"
 	),
 	Argument(
 		name="--config",
-		help="config file to use - other comandline arguments will override these settings",
-		dest="config_path",
-		default="./config/default.json"
+		help="Config file to use. Config settings will override other commandline params.",
+		dest="config_path"
 	)
 ]
 
 def get_args():
-	parser = argparse.ArgumentParser(description="create a terminal theme that matches an image")
+	parser = argparse.ArgumentParser(description="Create terminal themes to match wallpaper images.")
 
 	for argument in arguments:
 		argument.add_to_parser(parser)
 
-	args = parser.parse_args()
+	args = vars(parser.parse_args())
+	config_path = args['config_path']
 
-	with open(os.path.realpath(args.config_path), 'r') as config_json:
-		config = json.load(config_json)
-		for key, value in vars(args).items():
-			config[key] = value
+	if (config_path != None):
+		with open(os.path.realpath(config_path), 'r') as config_json:
+			config = json.load(config_json)
+			for key, value in config.items():
+				args[key] = value
 
-		return config
+	return args
 
