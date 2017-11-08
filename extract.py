@@ -57,7 +57,12 @@ except:
 html_contents = ""
 
 args = get_args()
-image_paths = map(os.path.realpath, args.images)
+
+images = args['images']
+background = args['background']
+template_path = args['template_path']
+
+image_paths = map(os.path.realpath, images)
 
 for img_file_path in image_paths:
     print("Generating colors for input " + str(img_file_path))
@@ -83,17 +88,17 @@ for img_file_path in image_paths:
     reference_dominant_light_color = np.array([[0, 0, 0.94]])
     reference_dominant_light_color = np.array([[0, 0, dominant_light[0][2]]])
 
-    if args.background == "dark" or (args.background == "auto" and bg_color[0][2] < 0.5):
+    if background == "dark" or (background == "auto" and bg_color[0][2] < 0.5):
         if (dominant_dark[0][1] > max_dominant_dark_saturation):
             dominant_dark[0][1] = max_dominant_dark_saturation
         bg_color = dominant_dark
         fg_color = dominant_light
-    elif args.background == "light" or (args.background == "auto" and bg_color[0][2] > 0.5):
+    elif background == "light" or (background == "auto" and bg_color[0][2] > 0.5):
         dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.07)
         bg_color = dominant_light
         fg_color = dominant_dark
-    elif args.background[0] == "#":
-        bg_color = hex2rgb(args.background)
+    elif background[0] == "#":
+        bg_color = hex2rgb(background)
         bg_color = hasel.rgb2hsl(np.array(bg_color).reshape(1, 1, 3)).reshape(1, 3)
         if (bg_color[0][2] < 0.5):
             fg_color = dominant_light
@@ -221,7 +226,7 @@ for img_file_path in image_paths:
     
     print("Output: " + output_image_path)
 
-    template_file_or_dir_path = os.path.realpath(args.template_path)
+    template_file_or_dir_path = os.path.realpath(template_path)
     if (os.path.isfile(template_file_or_dir_path)):
         template_file_path = template_file_or_dir_path
         with open(template_file_path, 'r') as template_file:

@@ -54,12 +54,13 @@ arguments = [
 		help="template or directory of templates to use for the theme",
 		default="./templates/",
 		dest="template_path"
+	),
+	Argument(
+		name="--config",
+		help="config file to use - other comandline arguments will override these settings",
+		dest="config_path",
+		default="./config/default.json"
 	)
-	# Argument(
-	# 	name="--config",
-	# 	help="config file to use - this will override any other comandline arguments",
-	# 	dest="config_path"
-	# )
 ]
 
 def get_args():
@@ -68,4 +69,12 @@ def get_args():
 	for argument in arguments:
 		argument.add_to_parser(parser)
 
-	return parser.parse_args()
+	args = parser.parse_args()
+
+	with open(os.path.realpath(args.config_path), 'r') as config_json:
+		config = json.load(config_json)
+		for key, value in vars(args).items():
+			config[key] = value
+
+		return config
+
