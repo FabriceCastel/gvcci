@@ -78,7 +78,7 @@ for img_file_path in image_paths:
     max_dominant_dark_saturation = 0.4
 
     reference_dominant_light_color = np.array([[0, 0, 0.94]])
-    reference_dominant_light_color = np.array([[0, 0, dominant_light[0][2]]])
+    reference_dominant_light_color = np.array([[0, 0, min(max(dominant_light[0][2], 0.75), 0.93)]])
 
     if background == "dark" or (background == "auto" and bg_color[0][2] < 0.5):
         if (dominant_dark[0][1] > max_dominant_dark_saturation):

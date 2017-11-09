@@ -56,15 +56,15 @@ Running the program will print the generated color palette, generate an examples
 - [X] Output a foreground color
 - [X] Assign adequately dark color to the ANSI 'Black' color value
 - [X] Improve background color selection for light themes
-- [ ] Fix light themes resulting in dull grey background colors
+- [X] Fix light themes resulting in dull grey background colors
 - [X] Improve theme bundling
 - [X] Improve syntax colors for light themes
 - [X] Map the generated colors to their nearest ANSI counterpart (ie. the ANSI red should be the most "red" of the generated colors etc)
 - [X] Refactor the codebase and modularize it where appropriate
 - [X] Add the ability to use output templates
-- [ ] Add commandline param to set the image as wallpaper
+- [ ] Integrate theme generation and apply scripts (add params in config to apply?)
 - [ ] Generalize script? (ie. be able to request X light colors, Y dark colors and Z variants on each color)
-- [ ] Store color theme in ~./gvcci/themes/.../ to allow for easy reuse with other templates rather than recompute the colors every time
+- [ ] Store generated color theme in ~./gvcci/themes/.../ to allow for easy reuse with other templates rather than recompute the colors every time
 - [ ] Add commandline params to specify min/max contrast levels between light and dark colours, min/max saturation values, etc
 
 ## Templates

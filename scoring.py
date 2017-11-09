@@ -94,10 +94,16 @@ def clip_between_boundaries(hsl_colors, dark_boundary, light_boundary, min_dark_
 
         while (dark_contrast[i] < min_dark_contrast):
             hsl_colors[i][2] += increment
+            if hsl_colors[i][2] > 1:
+                hsl_colors[i][2] = 1
+                break;
             dark_contrast = contrast_between_all(hsl_colors, dark_boundary)
 
         while (light_contrast[i] < min_light_contrast):
             hsl_colors[i][2] -= increment
+            if hsl_colors[i][2] < 0:
+                hsl_colors[i][2] = 0
+                break;
             light_contrast = contrast_between_all(hsl_colors, light_boundary)
 
     return hsl_colors
