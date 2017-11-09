@@ -18,8 +18,6 @@ from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_b
 from colorgenerator import generate_complementary, generate_similar
 
 n_colors = 16 # must be less than or equal to n_clusters
-v_threshold = 0.05 # ignore colors darker than this
-
 
 def get_pixels_for_image(img_file_path):
     print("reading image \"" + img_file_path + "\"")
@@ -29,12 +27,6 @@ def get_pixels_for_image(img_file_path):
     img_hsl = hasel.rgb2hsl(img_rgb[:,:,0:3])
     hsl_colors = img_hsl.reshape((-1, 3))
 
-    print("filtering out darkest colors before clustering for better results...")
-    samples_before = hsl_colors.shape[0]
-    hsl_colors = hsl_colors[hsl_colors[:,2] > v_threshold]
-    samples_after = hsl_colors.shape[0]
-
-    print("filtered out " + str(100 - (100 * samples_after) // samples_before) + "% of pixels")
     return hsl_colors
 
 
