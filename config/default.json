@@ -1,4 +1,5 @@
 {
 	"background": "auto",
-	"template_path": "templates/"
+	"template_path": "templates/",
+	"print_output": false
 }

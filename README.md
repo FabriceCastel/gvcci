@@ -49,6 +49,8 @@ Running the program will print the generated color palette, generate an examples
 
 `--template [file|directory]` - Defaults to `./templates`. Specify which template to use when generating the output. If your argument is a file, that template file will be used. If it's a directory, all files in that directory will be used as templates. For more information regarding templates, refer to the Templates section below.
 
+`--print-output` - If enabled, will output only the filled out template(s) to stdout.
+
 *EXPERIMENTAL* macOS iTerm users with a recent version of iTerm can run ```iterm_lazy.sh [img_path]``` for an easy one-step extract palette + generate iTerm profile + update iTerm profile + update wallpaper. You will need a recent version of iTerm (one that supports dynamic profiles) for this to work.
 
 ## Roadmap/TODO List

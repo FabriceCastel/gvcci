@@ -16,22 +16,19 @@ from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2
 from htmlpreview import get_html_contents
 from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
 from colorgenerator import generate_complementary, generate_similar
+from logger import log
 
 n_colors = 16 # must be less than or equal to n_clusters
 
 def get_pixels_for_image(img_file_path):
-    print("reading image \"" + img_file_path + "\"")
+    log("reading image \"" + img_file_path + "\"")
     img_rgb = io.imread(img_file_path)
 
-    print("converting color space...")
+    log("converting color space...")
     img_hsl = hasel.rgb2hsl(img_rgb[:,:,0:3])
     hsl_colors = img_hsl.reshape((-1, 3))
 
     return hsl_colors
-
-
-with open('resources/gvcci-title-ascii.txt', 'r') as logo:
-    print(logo.read())
 
 
 dir_path = os.path.expanduser("~/.gvcci")
@@ -53,11 +50,15 @@ args = get_args()
 images = args['images']
 background = args['background']
 template_path = args['template_path']
+print_output = args['print_output']
+
+with open('resources/gvcci-title-ascii.txt', 'r') as logo:
+    log(logo.read())
 
 image_paths = map(os.path.realpath, images)
 
 for img_file_path in image_paths:
-    print("Generating colors for input " + str(img_file_path))
+    log("Generating colors for input " + str(img_file_path))
 
     hsl_colors = get_pixels_for_image(img_file_path)
     improved_centers = hhsl_cluster_centers_as_hsl(hsl_colors)
@@ -199,10 +200,10 @@ for img_file_path in image_paths:
         colors[name + "-blue-float"]  = rgb[2] / 255
         colors[name + "-hex"]         = hex
 
-    print("=========== Terminal Colors ===========")
+    log("=========== Terminal Colors ===========")
     with open('templates/columns-with-headers.txt', 'r') as print_template:
-        print(pystache.render(print_template.read(), colors))
-    print("=======================================")
+        log(pystache.render(print_template.read(), colors))
+    log("=======================================")
 
     image_name = os.path.basename(img_file_path).split(".")[0]
     image_extension = os.path.basename(img_file_path).split(".")[-1]
@@ -216,7 +217,7 @@ for img_file_path in image_paths:
     output_image_path = os.path.join(output_dir_path, "wallpaper." + image_extension)
     copyfile(img_file_path, output_image_path)
     
-    print("Output: " + output_image_path)
+    log("Output: " + output_image_path)
 
     template_file_or_dir_path = os.path.realpath(template_path)
     if (os.path.isfile(template_file_or_dir_path)):
@@ -229,9 +230,12 @@ for img_file_path in image_paths:
 
 
             with open(output_theme_path, 'w') as out_file:
-                out_file.write(pystache.render(template, colors))
+                filled_out_template = pystache.render(template, colors)
+                out_file.write(filled_out_template)
+                if (print_output):
+                    print(filled_out_template)
             
-            print("Output: " + output_theme_path)
+            log("Output: " + output_theme_path)
     elif (os.path.isdir(template_file_or_dir_path)):
         for template_file in os.listdir(template_file_or_dir_path):
             template_file_path = os.path.join(template_file_or_dir_path, template_file)
@@ -241,11 +245,13 @@ for img_file_path in image_paths:
                 
                 output_theme_path = os.path.join(output_dir_path, template_file_name)
 
-
                 with open(output_theme_path, 'w') as out_file:
-                    out_file.write(pystache.render(template, colors))
+                    filled_out_template = pystache.render(template, colors)
+                    out_file.write(filled_out_template)
+                    if (print_output):
+                        print(filled_out_template)
                 
-                print("Output: " + output_theme_path)
+                log("Output: " + output_theme_path)
 
-    print("=======================================")
+    log("=======================================")
 
