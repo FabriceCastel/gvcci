@@ -28,17 +28,12 @@ This program has the following dependencies:
 * hasel
 * pystache
 
-To setup standard dependencies:
+To setup the project and dependencies:
 
-1. Download and install Python 3: https://www.python.org/downloads/ (3.6.3 is the most up to date version as of the writing of this readme)
-2. ```pip3 install cython pystache numpy scikit-learn scikit-image```
-
-To setup the project:
-
-1. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/gvcci
-2. ```cd``` into your local copy of the git repository
-3. ```python3 setup.py install``` to install the hasel dependency
-4. ```git submodule init``` and ```git submodule update --remote --merge```
+1. If you don't have python3 installed, you should download it here: https://www.python.org/downloads/ (3.6.3 is the most up to date version as of the writing of this readme)
+2. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/gvcci
+3. ```cd``` into your local copy of the git repository
+4. ```./install_dependencies.sh``` will download the required python libraries and initialize the git submodules
 5. ```python3 extract.py path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out templates.
