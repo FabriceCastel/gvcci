@@ -35,6 +35,14 @@ parser.add_argument(
 )
 parser.set_defaults(print_output=False)
 
+parser.add_argument(
+	"--symlink-wallpaper",
+	help="When saving the wallpaper in ~/.gvcci/themes/ use a symlink rather than copy the file.",
+	dest="symlink_wallpaper",
+	action='store_true'
+)
+parser.set_defaults(symlink_wallpaper=False)
+
 
 parser.add_argument(
 	"--config",

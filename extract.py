@@ -51,6 +51,7 @@ images = args['images']
 background = args['background']
 template_path = args['template_path']
 print_output = args['print_output']
+symlink_wallpaper = args['symlink_wallpaper']
 
 with open('resources/gvcci-title-ascii.txt', 'r') as logo:
     log(logo.read())
@@ -214,8 +215,17 @@ for img_file_path in image_paths:
     except:
         os.mkdir(output_dir_path)        
 
-    output_image_path = os.path.join(output_dir_path, "wallpaper." + image_extension)
-    copyfile(img_file_path, output_image_path)
+    output_image_path = os.path.join(output_dir_path, "wallpaper")
+
+    try:
+        os.remove(output_image_path)
+    except OSError:
+        pass
+        
+    if (symlink_wallpaper):
+        os.symlink(img_file_path, output_image_path)
+    else:
+        copyfile(img_file_path, output_image_path)
     
     log("Output: " + output_image_path)
 
