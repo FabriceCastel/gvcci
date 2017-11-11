@@ -8,3 +8,5 @@ git submodule init
 
 echo "Updateing git submodules..."
 git submodule update --remote --merge
+
+echo "Setup successful"
