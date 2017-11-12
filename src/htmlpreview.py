@@ -48,20 +48,20 @@ trait Stream[+A] {
     case Cons(head, tail) => head() :: tail().toListRecursive
     case _ => List()
   }
-
-  def toList: List[A] = {
-    @annotation.tailrec
-    def go(stream: Stream[A], acc: List[A]): List[A] = stream match {
-      case Cons(head, tail) => go(tail(), head() :: acc)
-      case _ => acc
-    }
-    go(this, List()).reverse
-  }
 }
 
 case object Empty extends Stream[Nothing]
 case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
-"""
+
+Foreground
+Black
+Red
+Green
+Yellow
+Blue
+Magenta
+Cyan
+White"""
 
     color_groups = [
         (cyan, ["def"]),
@@ -76,8 +76,18 @@ case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]
         (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
         (cyan, ["package", "object", "class", "trait", "import"]),
         (magenta, ["extends", "+"]),
-        (white, ["{", "}", "[", "]", "(", ")", ","])
+        (white, ["{", "}", "[", "]", "(", ")", ","]),
+        (black, ["Black"]),
+        (red, ["Red"]),
+        (green, ["Green"]),
+        (yellow, ["Yellow"]),
+        (blue, ["Blue"]),
+        (magenta, ["Magenta"]),
+        (cyan, ["Cyan"]),
+        (white, ["White"]),
+        (fg, ["Foreground"])
     ]
+
 
     width = 1200
     height = 700

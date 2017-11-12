@@ -140,17 +140,6 @@ for img_file_path in image_paths:
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_sorted)
     ansi_colors = ansi_colors_normal_and_bright
 
-    html_contents += get_html_contents(ansi_colors, bg_color, fg_color, img_file_path)
-    html =  "<body style='background: #000'>\n"
-    html += "<div>"
-    html += html_contents
-    html += "</div>"
-    html += "</body>\n"
-
-    result_file = open("examples.html", "w")
-    result_file.write(html)
-    result_file.close()
-
     black = bg_color.copy()
 
     if (bg_color[0][2] < 0.1):
@@ -162,6 +151,17 @@ for img_file_path in image_paths:
 
     black_bright = black.copy()
     black_bright[0][2] += 0.1
+
+    html_contents += get_html_contents(np.vstack((black, black_bright, ansi_colors)), bg_color, fg_color, img_file_path)
+    html =  "<body style='background: #000'>\n"
+    html += "<div>"
+    html += html_contents
+    html += "</div>"
+    html += "</body>\n"
+
+    result_file = open("examples.html", "w")
+    result_file.write(html)
+    result_file.close()
 
     colors_hsl = {
         "background":          bg_color,
