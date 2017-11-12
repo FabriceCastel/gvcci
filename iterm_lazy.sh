@@ -1,5 +1,5 @@
 #!/bin/bash
 
-python3 extract.py "$1" --template templates/iterm.plist --background dark
+python3 src/extract.py --template templates/iterm.plist "$1"
 img_name="$(basename "$1" | cut -d'.' -f1)"
 ./gvcci-apply/apply.sh $img_name iterm

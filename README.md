@@ -34,7 +34,7 @@ To setup the project and dependencies:
 2. Download & Extract (or clone) the source files from the github repo: https://github.com/FabriceCastel/gvcci
 3. ```cd``` into your local copy of the git repository
 4. ```./install_dependencies.sh``` will download the required python libraries and initialize the git submodules
-5. ```python3 extract.py path/to/image.jpg``` to run the program
+5. ```./gvcci.sh path/to/image.jpg``` to run the program
 
 Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out templates.
 
