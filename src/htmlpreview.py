@@ -25,7 +25,7 @@ def wrap_in_span(text, color):
     return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
 
 def get_preview_image(img_file_path, ansi_colors, bg_color, fg_color):
-    hex = hsllist2hex(np.vstack((ansi_colors, fg_color)))
+    hex = hsllist2hex(np.vstack((ansi_colors, fg_color, fg_color)))
     bg_rgb = hsl2rgb(bg_color)
 
     black =    0
@@ -36,7 +36,8 @@ def get_preview_image(img_file_path, ansi_colors, bg_color, fg_color):
     magenta =  10
     cyan =     12
     white =    14
-    fg =       16
+    # throwaway at 16, 17
+    fg =       18
 
     sample = """package colorscheme.example
 

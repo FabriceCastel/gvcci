@@ -14,7 +14,7 @@ from config import get_args
 from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
-from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart
+from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart, pick_n_best_colors_with_reference
 from colorgenerator import generate_complementary, generate_similar
 from logger import log
 
@@ -87,7 +87,7 @@ for img_file_path in image_paths:
             dominant_dark[0][1] = max_dominant_dark_saturation
         bg_color = dominant_dark
         fg_color = dominant_light
-    elif background == "light" or (background == "auto" and bg_color[0][2] > 0.5):
+    elif background == "light" or (background == "auto" and bg_color[0][2] >= 0.5):
         dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.07)
         bg_color = dominant_light
         fg_color = dominant_dark
@@ -116,12 +116,12 @@ for img_file_path in image_paths:
     # ansi constants
     black   = [0,       0, 0. ]
     red     = [0,       1, 0.5]
-    green   = [0.33333, 1, 0.5]
+    green   = [0.33333, 1, 0.4]
     yellow  = [0.16666, 1, 0.5]
-    blue    = [0.66666, 1, 0.5]
+    blue    = [0.66666, 1, 0.6]
     magenta = [0.83333, 1, 0.5]
     cyan    = [0.5,     1, 0.5]
-    white   = [0,       0, 1. ]
+    white   = [0,       0, 1.0]
 
     standard_ansi_colors = np.array([
         red,
@@ -134,9 +134,11 @@ for img_file_path in image_paths:
         black
     ])
 
+    # ansi_colors_unconstrained = pick_n_best_colors_with_reference(8, improved_centers, standard_ansi_colors, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_unconstrained = pick_n_best_colors(8, improved_centers, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_normal = clip_between_boundaries(ansi_colors_unconstrained, dominant_dark, dominant_light, min_dark_contrast, min_light_contrast)
     ansi_colors_sorted = sort_colors_by_closest_counterpart(ansi_colors_normal, standard_ansi_colors)
+    # ansi_colors_sorted = ansi_colors_normal # already sorted when you run it through pick_n_best_with_ref
     ansi_colors_normal_and_bright = generate_complementary(ansi_colors_sorted)
     ansi_colors = ansi_colors_normal_and_bright
 

@@ -99,6 +99,9 @@ def clip_between_boundaries(hsl_colors, dark_boundary, light_boundary, min_dark_
                 break;
             dark_contrast = contrast_between_all(hsl_colors, dark_boundary)
 
+        # recompute the light contrast once the dark contrast is adjusted
+        light_contrast = contrast_between_all(hsl_colors, light_boundary)
+
         while (light_contrast[i] < min_light_contrast):
             hsl_colors[i][2] -= increment
             if hsl_colors[i][2] < 0:
@@ -135,6 +138,33 @@ def find_nearest_pair(colors):
             index_2 = index_b
 
     return (index_1, index_2)
+
+def pick_n_best_colors_with_reference(n_colors, hsl_colors, ansi_reference, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast):
+    max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
+
+    # remove exact duplicates
+    hsl_unique_colors = np.vstack({tuple(row) for row in hsl_colors})
+    hsl_colors = hsl_unique_colors
+    while(len(hsl_colors) < n_colors):
+        # needs to output at least n_colors
+        hsl_colors = np.vstack((hsl_colors, hsl_unique_colors))
+
+    def boundary_contrast(colors):
+        return contrast_between_boundaries(colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast)
+
+    def sort_by_contrast(colors):
+        return colors[np.argsort(-1 * boundary_contrast(colors))]
+
+    def filter_within_bounds(colors, contrast_threshold):
+        return colors[boundary_contrast(colors) >= contrast_threshold]
+
+    within_bounds = filter_within_bounds(hsl_colors, max_contrast_requirement)
+
+    if len(within_bounds) <= n_colors:
+        # TODO make sure the unfiltered hsl_colors don't yield poor results - if they do, revert
+        within_bounds = hsl_colors # sort_by_contrast(hsl_colors)[:n_colors]
+
+    return sort_colors_by_closest_counterpart(within_bounds, ansi_reference)
 
 def pick_n_best_colors(n_colors, hsl_colors, dark_boundary, light_boundary, dark_min_contrast, light_min_contrast):
     max_contrast_requirement = max(dark_min_contrast, light_min_contrast)
