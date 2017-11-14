@@ -241,7 +241,7 @@ def sort_colors_by_closest_counterpart(hsl_colors, hsl_counterparts):
         closest_dist = 10000
         for i in range(len(hsl_colors_copy)):
             dh, ds, dl = distance_measures_between_colors(hsl_colors_copy[i], counterpart)
-            dist = (dh ** 2) * (1 + ds) * (1.5 + dl) # take the saturation/lightness into account, but only a little
+            dist = (dh ** 2) * (1 + ds) * (1.5 + dl) if (0.2 <= counterpart[2] <= 0.8) else dl
             if (dist < closest_dist):
                 closest_index = i
                 closest_dist = dist

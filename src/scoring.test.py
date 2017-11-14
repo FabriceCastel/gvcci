@@ -107,6 +107,18 @@ class ScoringTest(unittest.TestCase):
 	def test_distance_between_colors_hue_circle_extremities(self):
 		dist = distance_between_colors(red_hsl, red_2_hsl)
 		self.assertTrue(dist < 0.01)
+
+	def test_sorted_by_closest_counterpart_bad_case(self):
+		bad_blue = np.array([0.5694444, 1.0, 0.5]) # got incorrectly mapped to red, should be cyan
+		bad_red = np.array([0.0194444, 1.0, 0.5]) # got incorrectly mapped to cyan, should be red
+		ansi_red = np.array([0, 1, 0.5])
+		ansi_cyan = np.array([0.5, 1, 0.5])
+		sorted = sort_colors_by_closest_counterpart(np.vstack((bad_blue, bad_red)), np.vstack((ansi_red, ansi_cyan)))
+		sorted_inv = sort_colors_by_closest_counterpart(np.vstack((bad_red, bad_blue)), np.vstack((ansi_red, ansi_cyan)))
+
+		self.assertEqual(sorted[0][0], sorted_inv[0][0])
+		self.assertEqual(sorted[0][0], bad_red[0])
+
 		
 
 if __name__ == '__main__':
