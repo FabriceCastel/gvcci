@@ -21,8 +21,11 @@ def html_color_list(title, colors, col_width = 300):
     html += "</div>"
     return html
 
-def wrap_in_span(text, color):
-    return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
+def wrap_in_span(text, color, bg_color = None):
+    if (bg_color == None):
+        return "<span style='font-family:monospace;font-size:18px;color:" + color + ";'>" + text + "</span>"
+    else:
+        return "<span style='font-family:monospace;font-size:18px;background:" + bg_color + ";color:" + color + ";'>" + text + "</span>"
 
 def get_preview_image(img_file_path, ansi_colors, bg_color, fg_color):
     hex = hsllist2hex(np.vstack((ansi_colors, fg_color, fg_color)))
@@ -69,7 +72,7 @@ White"""
         (fg, ["acc"]),
         (magenta, ["::"]),
         (fg, ["tail: "]),
-        (white, [": "]),
+        (magenta, [": "]),
         (yellow, ["@annotation.tailrec", "match", "case", "."]),
         (fg, ["toListRecursive", "toList", "colorscheme", "example", "_", "this", "head", "tail(", "tail)", " go", "stream", "reverse"]),
         (red, ["= ", "=>"]),
@@ -77,7 +80,7 @@ White"""
         (blue, ["List[", " List", "Stream", "A", "Nothing", "Cons", "Empty"]),
         (cyan, ["package", "object", "class", "trait", "import"]),
         (magenta, ["extends", "+"]),
-        (white, ["{", "}", "[", "]", "(", ")", ","]),
+        (magenta, ["{", "}", "[", "]", "(", ")", ","]),
         (black, ["Black"]),
         (red, ["Red"]),
         (green, ["Green"]),
@@ -99,8 +102,12 @@ White"""
     html += "<div style='z-index: 10; padding: " + str(text_padding) + "px; position: absolute; top: " + str(terminal_padding) + "px; left: " + str(terminal_padding) + "px;right: " + str(terminal_padding) + "px;bottom: " + str(terminal_padding) + "px; background-color: rgba(" + str(bg_rgb[0]) + ", " +str(bg_rgb[1]) + ", " +str(bg_rgb[2]) + ", 1.0)'><pre style='margin: 0;'>"
 
     for group in color_groups:
-        for word in group[1]:
-            sample = sample.replace(word, wrap_in_span(word, hex[group[0]]))
+        if (group[0] == white or group[0] == black):
+            for word in group[1]:
+                sample = sample.replace(word, wrap_in_span(word, hex[group[0]], hex[black] if group[0] == white else hex[white]))
+        else:
+            for word in group[1]:
+                sample = sample.replace(word, wrap_in_span(word, hex[group[0]]))
 
     lines = sample.split('\n')
     vim = ''

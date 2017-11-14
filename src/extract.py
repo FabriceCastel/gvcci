@@ -154,6 +154,11 @@ for img_file_path in image_paths:
     black_bright = black.copy()
     black_bright[0][2] += 0.1
 
+    white_l_threshold = 0.85
+    if ansi_colors[12][2] < white_l_threshold:
+        ansi_colors[12][2] = white_l_threshold # white l value lower bound
+        ansi_colors[13][2] = white_l_threshold + 0.12
+
     html_contents += get_html_contents(np.vstack((black, black_bright, ansi_colors)), bg_color, fg_color, img_file_path)
     html =  "<body style='background: #000'>\n"
     html += "<div>"
