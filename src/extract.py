@@ -88,7 +88,7 @@ for img_file_path in image_paths:
         bg_color = dominant_dark
         fg_color = dominant_light
     elif background == "light" or (background == "auto" and bg_color[0][2] >= 0.5):
-        dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.07)
+        dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.04)
         bg_color = dominant_light
         fg_color = dominant_dark
     elif background[0] == "#":
