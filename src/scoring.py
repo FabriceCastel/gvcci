@@ -212,7 +212,7 @@ def find_dominant_by_frequency(hsl_colors):
 
     precision = 32
     dark_l = 0.17
-    light_l = 0.7
+    light_l = 0.675
     light_l_upper = 0.95
 
     light_colors = hsl_colors[hsl_colors[:,2] > light_l]

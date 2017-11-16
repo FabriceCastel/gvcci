@@ -49,6 +49,6 @@ def correct_saturation(color_hsl):
     shifted_hue = hue - (60 / 360) # align the yellow at 0 deg and blue at 180 deg
     half_hue = (((1 + shifted_hue) * 2) % 1) / 2 # now blue and yellow are at 0 and other tones are in (0:1]
     corrected_saturation = half_hue * color_hsl[0][1]
-    corrected_saturation = 0.2 + (corrected_saturation * 0.6)
+    corrected_saturation = 0.15 + (corrected_saturation * 0.7)
 
     return np.array([[color_hsl[0][0], min(color_hsl[0][1], corrected_saturation), color_hsl[0][2]]])
