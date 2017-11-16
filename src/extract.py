@@ -15,7 +15,7 @@ from clustering import hhsl_cluster_centers_as_hsl, hsl_cluster_centers
 from converters import hex2rgb, rgb2hex, rgblist2hex, hsllist2hex, hsl2rgb, hsl2hex
 from htmlpreview import get_html_contents
 from scoring import pick_n_best_colors, clip_between_boundaries, find_dominant_by_frequency, sort_colors_by_closest_counterpart, pick_n_best_colors_with_reference
-from colorgenerator import generate_complementary, generate_similar
+from colorgenerator import generate_complementary, generate_similar, correct_saturation
 from logger import log
 
 n_colors = 16 # must be less than or equal to n_clusters
@@ -80,7 +80,7 @@ for img_file_path in image_paths:
     max_dominant_dark_saturation = 0.4
 
     reference_dominant_light_color = np.array([[0, 0, 0.94]])
-    reference_dominant_light_color = np.array([[0, 0, min(max(dominant_light[0][2], 0.75), 0.93)]])
+    reference_dominant_light_color = np.array([[0, 0, min(max(dominant_light[0][2], 0.8), 0.95)]])
 
     if background == "dark" or (background == "auto" and bg_color[0][2] < 0.5):
         if (dominant_dark[0][1] > max_dominant_dark_saturation):
@@ -88,7 +88,7 @@ for img_file_path in image_paths:
         bg_color = dominant_dark
         fg_color = dominant_light
     elif background == "light" or (background == "auto" and bg_color[0][2] >= 0.5):
-        dominant_light = generate_similar(dominant_light, reference_dominant_light_color, 1.04)
+        dominant_light = correct_saturation(dominant_light)
         bg_color = dominant_light
         fg_color = dominant_dark
     elif background[0] == "#":
@@ -110,8 +110,8 @@ for img_file_path in image_paths:
 
     # light theme settings
     if (bg_color[0][2] > 0.5):
-        min_dark_contrast = 9
-        min_light_contrast = 4
+        min_dark_contrast = 16
+        min_light_contrast = 3
 
     # ansi constants
     black   = [0,       0, 0. ]
