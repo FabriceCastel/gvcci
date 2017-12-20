@@ -27,6 +27,15 @@ def get_pixels_for_image(img_file_path):
     img_rgb = io.imread(img_file_path)
 
     log("converting color space...")
+
+    if (len(img_rgb.shape) < 3): # this is a greyscale image
+        w, h = img_rgb.shape
+        ret = np.empty((w, h, 3), dtype=np.uint8)
+        ret[:, :, 0] = img_rgb
+        ret[:, :, 1] = img_rgb
+        ret[:, :, 2] = img_rgb
+        img_rgb = ret
+    
     img_hsl = hasel.rgb2hsl(img_rgb[:,:,0:3])
     hsl_colors = img_hsl.reshape((-1, 3))
 
