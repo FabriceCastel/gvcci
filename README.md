@@ -36,7 +36,7 @@ To setup the project and dependencies:
 4. ```./install_dependencies.sh``` will download the required python libraries and initialize the git submodules
 5. ```./gvcci.sh path/to/image.jpg``` to run the program
 
-Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gcvvi/themes/``` containing the image and the filled out templates.
+Running the program will print the generated color palette, generate an examples.html file with some previews that you can open in any web browser and a theme package in ```~/.gvcci/themes/``` containing the image and the filled out templates.
 
 ## Options
 
