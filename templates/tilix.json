@@ -1,0 +1,33 @@
+{
+    "name": "Gvcci",
+    "comment": "Gvcci generated theme.",
+    "foreground-color": "{{foreground-hex}}",
+    "background-color": "{{background-hex}}",
+    "use-theme-colors": false,
+    "use-highlight-color": false,
+    "highlight-foreground-color": "{{selected-text-hex}}",
+    "highlight-background-color": "{{selection-hex}}",
+    "use-cursor-color": false,
+    "cursor-foreground-color": "{{cursor-hex}}",
+    "cursor-background-color": "{{cursor-hex}}",
+    "use-badge-color": true,
+    "badge-color": "{{foreground-hex}}",
+    "palette": [
+        "{{ansi-black-normal-hex}}",
+        "{{ansi-red-normal-hex}}",
+        "{{ansi-green-normal-hex}}",
+        "{{ansi-yellow-normal-hex}}",
+        "{{ansi-blue-normal-hex}}",
+        "{{ansi-magenta-normal-hex}}",
+        "{{ansi-cyan-normal-hex}}",
+        "{{ansi-white-normal-hex}}",
+        "{{ansi-black-bright-hex}}",
+        "{{ansi-red-bright-hex}}",
+        "{{ansi-green-bright-hex}}",
+        "{{ansi-yellow-bright-hex}}",
+        "{{ansi-blue-bright-hex}}",
+        "{{ansi-magenta-bright-hex}}",
+        "{{ansi-cyan-bright-hex}}",
+        "{{ansi-white-bright-hex}}"
+    ]
+}
