@@ -97,7 +97,6 @@
       "Sync Title" : false,
       "Prompt Before Closing 2" : false,
       "BM Growl" : false,
-      "Command" : "\/usr\/local\/bin\/fish",
       "Description" : "Default",
       "Mouse Reporting" : true,
       "Smart Cursor Color" : false,
